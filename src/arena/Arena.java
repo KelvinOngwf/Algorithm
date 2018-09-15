@@ -3,18 +3,28 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package algorithm;
+package arena;
+
+import javax.swing.*;
+import java.awt.*;
+
+import robot.Robot;
 
 /**
  *
  * @author Kelvin
  */
-public class Arena {
+public class Arena extends JPanel{
     
     private int mapRow = 20;
     private int mapCol = 15;
+    public static int goalX=2;
+    public static int goalY=12;
+    public static int startX=17;
+    public static int startY=2;
     private Cell c[][];
     private Robot robot;
+    
         
     public Arena(Robot robot){
         this.robot=robot;
@@ -52,12 +62,12 @@ public class Arena {
                 else
                     c[i][j].setVisited(false);                
     }
-    private boolean goalArea(int x,int y){
+    public boolean goalArea(int x,int y){
         if(x==2 && y==12)
             return true;
         return false;
     }
-    private boolean startArea(int x,int y){
+    public boolean startArea(int x,int y){
         if(x==17 && y==2)
             return true;
         return false;
@@ -77,6 +87,14 @@ public class Arena {
         //right
         c[x][y+1].setVirtualWall(obstacle);
         
+    }
+    public boolean checkValidCell(int x, int y){
+        if(x >= 0 && x < mapRow && y >= 0 && y < mapCol)
+            return true;
+        return false;
+    }
+     public Cell getCell(int x, int y) {
+        return c[x][y];
     }
     public String getMDFString(){
         String mdfString = "11";
