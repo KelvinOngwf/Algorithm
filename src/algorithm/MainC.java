@@ -16,12 +16,11 @@ public class MainC {
      */
     public static void main(String[] args) {
        
-        ArenaGen Ag = new ArenaGen();
+        //ArenaGen Ag = new ArenaGen();
 
         //Robot r = new Robot(Ag);
         //r.explorationMode(Ag);
-        int hexStr = Integer.parseInt(Ag.getMDFString());
-        String abc = Integer.toHexString(hexStr);
-        System.out.print(abc);
+        //int hexStr = Integer.parseInt(Ag.getMDFString());
+        //String abc = Integer.toHexString(hexStr);
     }
 }

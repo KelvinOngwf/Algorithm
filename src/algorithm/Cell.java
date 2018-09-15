@@ -29,7 +29,6 @@ public class Cell {
     public int getCol(){
         return col;
     }
-    
     public void setObstacle(boolean setObstacle){
         isObstacle=setObstacle;
     }
