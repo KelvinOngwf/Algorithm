@@ -38,12 +38,12 @@ public class Robot {
         currentF=facing;
         reachedGoal=false;
         
-        sensorR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,currentX+1,currentY+1,setSensorRight(),"SR");
-        sensorFR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,currentX+1,currentY+1,currentF,"SFR");
-        sensorFC = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,currentX,currentY+1,currentF,"SFC");
-        sensorFL = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,currentX-1,currentY+1,currentF,"SFL");
-        sensorL = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,currentX-1,currentY+1,setSensorLeft(),"SL");
-        sensorLL = new Sensor(sensorLongRangeUpperRange,sensorLongRangeLowerRange,currentX-1,currentY,setSensorLeft(),"SLL");
+        sensorR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SR");
+        sensorFR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFR");
+        sensorFC = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFC");
+        sensorFL = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFL");
+        sensorL = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SL");
+        sensorLL = new Sensor(sensorLongRangeUpperRange,sensorLongRangeLowerRange,"SLL");
         
     }
     public int getRobotX(){
@@ -171,6 +171,52 @@ public class Robot {
         }
         return "-1";
     }
-    
-    
+    public void setSensors(){
+        switch(currentF){
+            case "N":
+                sensorR.setSensor(currentX-1, currentY+1, setSensorRight());
+                sensorFR.setSensor(currentX-1, currentY+1, currentF);
+                sensorFC.setSensor(currentX-1, currentY, currentF);
+                sensorFL.setSensor(currentX-1, currentY-1, currentF);
+                sensorL.setSensor(currentX-1, currentY-1, setSensorLeft());
+                sensorLL.setSensor(currentX, currentY-1, setSensorLeft());
+                break;
+            case "S":
+                sensorR.setSensor(currentX+1, currentY-1, setSensorRight());
+                sensorFR.setSensor(currentX+1, currentY-1, currentF);
+                sensorFC.setSensor(currentX+1, currentY, currentF);
+                sensorFL.setSensor(currentX+1, currentY+1, currentF);
+                sensorL.setSensor(currentX+1, currentY+1, setSensorLeft());
+                sensorLL.setSensor(currentX, currentY+1, setSensorLeft());
+                break;
+            case "E":
+                sensorR.setSensor(currentX+1, currentY+1, setSensorRight());
+                sensorFR.setSensor(currentX+1, currentY+1, currentF);
+                sensorFC.setSensor(currentX, currentY+1, currentF);
+                sensorFL.setSensor(currentX-1, currentY+1, currentF);
+                sensorL.setSensor(currentX-1, currentY+1, setSensorLeft());
+                sensorLL.setSensor(currentX-1, currentY, setSensorLeft());
+                break;
+            case "W":
+                sensorR.setSensor(currentX-1, currentY-1, setSensorRight());
+                sensorFR.setSensor(currentX-1, currentY-1, currentF);
+                sensorFC.setSensor(currentX, currentY-1, currentF);
+                sensorFL.setSensor(currentX+1, currentY-1, currentF);
+                sensorL.setSensor(currentX+1, currentY-1, setSensorLeft());
+                sensorLL.setSensor(currentX+1, currentY, setSensorLeft());
+                break;
+        }
+    }
+    public int[] detect(Arena exploredArena, Arena realArena) {
+        int[] result = new int[6];
+
+        result[0] = sensorR.virtualDetect(exploredArena, realArena);
+        result[1] = sensorFR.virtualDetect(exploredArena, realArena);
+        result[2] = sensorFC.virtualDetect(exploredArena, realArena);
+        result[3] = sensorFL.virtualDetect(exploredArena, realArena);
+        result[4] = sensorL.virtualDetect(exploredArena, realArena);
+        result[5] = sensorLL.virtualDetect(exploredArena, realArena);
+
+        return result;
+    }
 }

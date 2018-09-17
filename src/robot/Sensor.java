@@ -19,12 +19,9 @@ public class Sensor {
     private String sensorF;
     private String sensorID;
     
-    public Sensor(int upperRange, int lowerRange,int x, int y,String facing,String id){
+    public Sensor(int upperRange, int lowerRange,String id){
         this.lowerRange = lowerRange;
         this.upperRange = upperRange;
-        sensorX = x;
-        sensorY = y;
-        sensorF = facing;
         sensorID = id;
     }
     public void setSensor(int x,int y,String facing){
@@ -81,7 +78,7 @@ public class Sensor {
         // Else, return -1.
         return -1;
     }
-     public void senseReal(Arena exploredArena, int sensorVal) {
+     public void realDetect(Arena exploredArena, int sensorVal) {
         switch (sensorF) {
             case "N":
                 processSensorVal(exploredArena, sensorVal, 1, 0);
