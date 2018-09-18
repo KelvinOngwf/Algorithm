@@ -30,14 +30,15 @@ public class Robot {
     private int sensorShortRangeLowerRange = 1;
     private int sensorLongRangeUpperRange = 4;
     private int sensorLongRangeLowerRange = 3;
+    private boolean simulationBot;
     
     
-    public Robot(int x,int y,String facing){
+    public Robot(int x,int y,String facing,boolean simulationBot){
         currentX=x;
         currentY=y;
         currentF=facing;
         reachedGoal=false;
-        
+        this.simulationBot=simulationBot;
         sensorR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SR");
         sensorFR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFR");
         sensorFC = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFC");
@@ -54,6 +55,9 @@ public class Robot {
     }
     public String getRobotFacing(){
         return currentF;
+    }
+    public boolean getSimulationBot(){
+        return simulationBot;
     }
     public void reachedGoal(){
         if(currentX==Arena.goalX && currentY==Arena.goalY)
@@ -209,13 +213,18 @@ public class Robot {
     }
     public int[] detect(Arena exploredArena, Arena realArena) {
         int[] result = new int[6];
+        if (simulationBot) {
+            result[0] = sensorR.virtualDetect(exploredArena, realArena);
+            result[1] = sensorFR.virtualDetect(exploredArena, realArena);
+            result[2] = sensorFC.virtualDetect(exploredArena, realArena);
+            result[3] = sensorFL.virtualDetect(exploredArena, realArena);
+            result[4] = sensorL.virtualDetect(exploredArena, realArena);
+            result[5] = sensorLL.virtualDetect(exploredArena, realArena);
+        }
+        else{
+            //real detection not yet input
+        }
 
-        result[0] = sensorR.virtualDetect(exploredArena, realArena);
-        result[1] = sensorFR.virtualDetect(exploredArena, realArena);
-        result[2] = sensorFC.virtualDetect(exploredArena, realArena);
-        result[3] = sensorFL.virtualDetect(exploredArena, realArena);
-        result[4] = sensorL.virtualDetect(exploredArena, realArena);
-        result[5] = sensorLL.virtualDetect(exploredArena, realArena);
 
         return result;
     }

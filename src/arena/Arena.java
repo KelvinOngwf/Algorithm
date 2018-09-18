@@ -7,7 +7,6 @@ package arena;
 
 import javax.swing.*;
 import java.awt.*;
-
 import robot.Robot;
 
 /**
@@ -105,5 +104,4 @@ public class Arena extends JPanel{
         }
         return mdfString+"11";    
     }
-    
 }
