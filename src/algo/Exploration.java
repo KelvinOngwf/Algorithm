@@ -40,6 +40,113 @@ public class Exploration {
             
         }
     }
-    //private void 
+    private void moveAlgo(){
+        if (lookRight()) {
+            robot.turnRight();
+            if (lookForward()) 
+                robot.moveForward();
+        } else if (lookForward()) {
+            robot.moveForward();
+        } else if (lookLeft()) {
+            robot.turnLeft();
+            if (lookForward()) 
+                robot.moveForward();
+        } else {
+            robot.turnRight();
+            robot.turnRight();
+        }
+    }
+    private boolean lookLeft() {
+        switch (robot.getRobotFacing()) {
+            case "N":
+                return westClear();
+            case "S":
+                return eastClear();
+            case "E":
+                return northClear();
+            case "W":
+                return southClear();
+        }
+        return false;
+    }
+    private boolean lookRight() {
+        switch (robot.getRobotFacing()) {
+            case "N":
+                return eastClear();
+            case "S":
+                return westClear();
+            case "E":
+                return southClear();
+            case "W":
+                return northClear();
+        }
+        return false;
+    }
+    private boolean lookForward() {
+        switch (robot.getRobotFacing()) {
+            case "N":
+                return northClear();
+            case "S":
+                return southClear();
+            case "E":
+                return eastClear();
+            case "W":
+                return westClear();
+        }
+        return false;
+    }
+    private boolean northClear(){
+        int x=robot.getRobotX();
+        int y=robot.getRobotY();
+        return()
+    }
+    private boolean southClear(){
+        int x=robot.getRobotX();
+        int y=robot.getRobotY();
+        return()
+    }
+    private boolean eastClear(){
+        int x=robot.getRobotX();
+        int y=robot.getRobotY();
+        return()
+    }
+    private boolean westClear(){
+        int x=robot.getRobotX();
+        int y=robot.getRobotY();
+        return()
+    }
+    private boolean isExploredAndNotObstacle(int x, int y) {
+        if (exploredArena.checkValidCell(x, y)) {
+            Cell temp = exploredArena.getCell(x, y);
+            return (temp.getIsVisited() && !temp.getIsObstacle());
+        }
+        return false;
+    }
+
+    /**
+     * Returns true for cells that are explored, not virtual walls and not obstacles.
+     */
+    private boolean isExploredAndIsFree(int x, int y) {
+        if (exploredArena.checkValidCell(x, y)) {
+            Cell temp = exploredArena.getCell(x, y);
+            return (temp.getIsVisited() && !temp.getVirtualWall() && !temp.getIsObstacle());
+        }
+        return false;
+    }
+
+    /**
+     * Returns the number of cells explored in the grid.
+     */
+    private int calculateAreaExplored() {
+        int result = 0;
+        for (int x = 0; x < Arena.mapRow; x++) {
+            for (int y = 0; y < Arena.mapCol; y++) {
+                if (exploredArena.getCell(x, y).getIsVisited()) {
+                    result++;
+                }
+            }
+        }
+        return result;
+    }
     
 }

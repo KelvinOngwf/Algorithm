@@ -15,8 +15,8 @@ import robot.Robot;
  */
 public class Arena extends JPanel{
     
-    private int mapRow = 20;
-    private int mapCol = 15;
+    public static int mapRow = 20;
+    public static int mapCol = 15;
     public static int goalX=2;
     public static int goalY=12;
     public static int startX=17;
