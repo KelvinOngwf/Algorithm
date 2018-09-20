@@ -37,7 +37,16 @@ public class Exploration {
     // need rename lol
     private void explorationLoop(int x, int y){
         while(areaExplored <= exploreLimit && System.currentTimeMillis()<= endTime){
+            moveAlgo();
             
+            areaExplored = calculateAreaExplored();
+            System.out.println("Area explored: " + areaExplored);
+
+            if (robot.getRobotX() == x && robot.getRobotY() == y) {
+                if (areaExplored >= 100) {
+                    break;
+                }
+            }
         }
     }
     private void moveAlgo(){
@@ -98,22 +107,22 @@ public class Exploration {
     private boolean northClear(){
         int x=robot.getRobotX();
         int y=robot.getRobotY();
-        return()
+        return(isExploredAndNotObstacle(x-1,y-1)&&isExploredAndNotObstacle(x-1,y+1)&&isExploredAndIsFree(x+1,y));
     }
     private boolean southClear(){
         int x=robot.getRobotX();
         int y=robot.getRobotY();
-        return()
+        return(isExploredAndNotObstacle(x+1,y-1)&&isExploredAndNotObstacle(x+1,y+1)&&isExploredAndIsFree(x+1,y));
     }
     private boolean eastClear(){
         int x=robot.getRobotX();
         int y=robot.getRobotY();
-        return()
+        return(isExploredAndNotObstacle(x-1,y+1)&&isExploredAndNotObstacle(x+1,y+1)&&isExploredAndIsFree(x,y+1));
     }
     private boolean westClear(){
         int x=robot.getRobotX();
         int y=robot.getRobotY();
-        return()
+        return(isExploredAndNotObstacle(x-1,y-1)&&isExploredAndNotObstacle(x+1,y-1)&&isExploredAndIsFree(x,y-1));
     }
     private boolean isExploredAndNotObstacle(int x, int y) {
         if (exploredArena.checkValidCell(x, y)) {
@@ -122,10 +131,6 @@ public class Exploration {
         }
         return false;
     }
-
-    /**
-     * Returns true for cells that are explored, not virtual walls and not obstacles.
-     */
     private boolean isExploredAndIsFree(int x, int y) {
         if (exploredArena.checkValidCell(x, y)) {
             Cell temp = exploredArena.getCell(x, y);
