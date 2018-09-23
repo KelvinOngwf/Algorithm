@@ -15,14 +15,14 @@ import robot.*;
 public class Exploration {
     private Arena exploredArena;
     private Arena realArena;
-    private Robot robot;
+    private Machine robot;
     private int exploreLimit;
     private int timeLimit;
     private int areaExplored;
     private long startTime;
     private long endTime;
     
-    public Exploration(Arena exploredArena,Arena realArena, Robot robot,int exploreLimit, int timeLimit){
+    public Exploration(Arena exploredArena,Arena realArena, Machine robot,int exploreLimit, int timeLimit){
         this.exploredArena= exploredArena;
         this.realArena=realArena;
         this.robot=robot;

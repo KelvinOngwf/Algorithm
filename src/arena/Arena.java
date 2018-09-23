@@ -20,10 +20,10 @@ public class Arena{
     public int startX=17;
     public int startY=2;
     private Cell c[][];
-    private Robot robot;
+    private Machine robot;
     
         
-    public Arena(Robot robot){
+    public Arena(Machine robot){
         this.robot=robot;
         c = new Cell[arenaX][arenaY];
         for(int i=0;i<arenaX-1;i++){

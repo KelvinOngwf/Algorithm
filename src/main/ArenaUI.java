@@ -5,7 +5,7 @@
  */
 package main;
 
-//import arena.*;
+import arena.*;
 import robot.*;
 import javax.swing.*;
 import java.awt.*;
@@ -16,12 +16,41 @@ import java.awt.*;
  * @author Kelvin
  */
 public class ArenaUI {
+    private int arenaSize = 300;
+    private int CELL_LINE_WEIGHT = 2;
+
+    private Color startColor = Color.BLUE;
+    private Color goalColor = Color.YELLOW;
+    private Color unexploredColor = Color.LIGHT_GRAY;
+    private Color freeSpaceColor = Color.WHITE;
+    private Color obstacleColor = Color.BLACK;
+
+    private Color machineColor = Color.BLACK;
+    private Color machineFacingColor = Color.WHITE;
+
+    private int machineWidth = 70;
+    private int machineHeight = 70;
+
+    private int machineXOffset = 10;
+    private int machineYOffset = 20;
+
+    private int machineFacingWidth = 10;
+    private int machineFacingHeight = 10;
+
+    private int cellSize = 30;
+
+    private int arenaHeight = 600;
+    private int arenaXOffset = 120;
     
-    public ArenaUI(){
-        _DisplayCell[][] _mapCells = new _DisplayCell[Arena.arenaX][Arena.arenaY];
+    
+    
+    
+    public void paintComponent(Graphics g) {
+        // Create a two-dimensional array of _DisplayCell objects for rendering.
+        DisplayCell[][] mapCells = new DisplayCell[Arena.arenaX][Arena.arenaY];
         for (int x = 0; x < Arena.arenaX; x++) {
             for (int y = 0; y < Arena.arenaY; y++) {
-                _mapCells[x][y] = new _DisplayCell(x * 30, y * 30, 30);
+                mapCells[x][y] = new DisplayCell(y * cellSize, x * cellSize, cellSize);
             }
         }
 
@@ -31,57 +60,58 @@ public class ArenaUI {
                 Color cellColor;
 
                 if (inStartZone(x, y))
-                    cellColor = Color.YELLOW;                
+                    cellColor = startColor;
                 else if (inGoalZone(x, y))
-                    cellColor = Color.RED;
+                    cellColor = goalColor;
                 else {
                     if (!c[x][y].getIsVisited())
-                        cellColor = Color.GRAY;
-                    else if (c[x][y].getIsObstacle())
-                        cellColor = Color.BLACK;
+                        cellColor = unexploredColor;
+                    else if (grid[x][y].getIsObstacle())
+                        cellColor = obstacleColor;
                     else
-                        cellColor = Color.WHITE;
+                        cellColor = freeSpaceColor;
                 }
 
                 g.setColor(cellColor);
-                g.fillRect(_mapCells[x][y].cellX + 10, _mapCells[x][y].cellY, _mapCells[x][y].cellSize, _mapCells[x][y].cellSize);
+                g.fillRect(mapCells[x][y].cellX + arenaXOffset, mapCells[x][y].cellY, mapCells[x][y].cellSize, mapCells[x][y].cellSize);
 
             }
         }
 
         // Paint the robot on-screen.
-        g.setColor(Color.CYAN);
-        int r = robot.getRobotX();
-        int c = robot.getRobotY();
-        g.fillOval((c - 1) * GraphicsConstants.CELL_SIZE + GraphicsConstants.ROBOT_X_OFFSET + GraphicsConstants.MAP_X_OFFSET, GraphicsConstants.MAP_H - (r * GraphicsConstants.CELL_SIZE + GraphicsConstants.ROBOT_Y_OFFSET), GraphicsConstants.ROBOT_W, GraphicsConstants.ROBOT_H);
+        g.setColor(machineColor);
+        int r = bot.getRobotPosRow();
+        int c = bot.getRobotPosCol();
+        g.fillOval((c - 1) * cellSize + machineXOffset + arenaXOffset, arenaHeight - (r * cellSize + machineYOffset), machineWidth, machineHeight);
 
         // Paint the robot's direction indicator on-screen.
-        g.setColor(GraphicsConstants.C_ROBOT_DIR);
-        RobotConstants.DIRECTION d = bot.getRobotCurDir();
+        g.setColor(machineFacingColor);
+        private String machineFacing = Machine.getRobotFacing();
         switch (d) {
-            case NORTH:
-                g.fillOval(c * GraphicsConstants.CELL_SIZE + 10 + GraphicsConstants.MAP_X_OFFSET, GraphicsConstants.MAP_H - r * GraphicsConstants.CELL_SIZE - 15, GraphicsConstants.ROBOT_DIR_W, GraphicsConstants.ROBOT_DIR_H);
+            case "N":
+                g.fillOval(c * cellSize + 10 + arenaXOffset, arenaHeight - r * cellSize - 15, machineFacingWidth, machineFacingHeight);
                 break;
-            case EAST:
-                g.fillOval(c * GraphicsConstants.CELL_SIZE + 35 + GraphicsConstants.MAP_X_OFFSET, GraphicsConstants.MAP_H - r * GraphicsConstants.CELL_SIZE + 10, GraphicsConstants.ROBOT_DIR_W, GraphicsConstants.ROBOT_DIR_H);
+            case "E":
+                g.fillOval(c * cellSize + 35 + arenaXOffset, arenaHeight - r * cellSize + 10, machineFacingWidth, machineFacingHeight);
                 break;
-            case SOUTH:
-                g.fillOval(c * GraphicsConstants.CELL_SIZE + 10 + GraphicsConstants.MAP_X_OFFSET, GraphicsConstants.MAP_H - r * GraphicsConstants.CELL_SIZE + 35, GraphicsConstants.ROBOT_DIR_W, GraphicsConstants.ROBOT_DIR_H);
+            case "S":
+                g.fillOval(c * cellSize + 10 + arenaXOffset, arenaHeight - r * cellSize + 35, machineFacingWidth, machineFacingHeight);
                 break;
-            case WEST:
-                g.fillOval(c * GraphicsConstants.CELL_SIZE - 15 + GraphicsConstants.MAP_X_OFFSET, GraphicsConstants.MAP_H - r * GraphicsConstants.CELL_SIZE + 10, GraphicsConstants.ROBOT_DIR_W, GraphicsConstants.ROBOT_DIR_H);
+            case "W":
+                g.fillOval(c * cellSize - 15 + arenaXOffset, arenaHeight - r * cellSize + 10, machineFacingWidth, machineFacingHeight);
                 break;
         }
     }
-    private class _DisplayCell {
+
+    private class DisplayCell {
         public final int cellX;
         public final int cellY;
         public final int cellSize;
 
-        public _DisplayCell(int borderX, int borderY, int borderSize) {
-            this.cellX = borderX + GraphicsConstants.CELL_LINE_WEIGHT;
-            this.cellY = GraphicsConstants.MAP_H - (borderY - GraphicsConstants.CELL_LINE_WEIGHT);
-            this.cellSize = borderSize - (GraphicsConstants.CELL_LINE_WEIGHT * 2);
+        public DisplayCell(int borderX, int borderY, int borderSize) {
+            cellX = borderX + CELL_LINE_WEIGHT;
+            cellY = arenaHeight - (borderY - CELL_LINE_WEIGHT);
+            cellSize = borderSize - (CELL_LINE_WEIGHT * 2);
         }
     }
     

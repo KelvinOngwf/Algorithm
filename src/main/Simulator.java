@@ -20,7 +20,7 @@ public class Simulator {
     private static JPanel _mapCards = null;         // JPanel for map views
     private static JPanel _buttons = null;          // JPanel for buttons
 
-    private static Robot machine;
+    private static Machine machine;
 
     private static Arena realMap = null;              // real map
     private static Arena exploredMap = null;          // exploration map
@@ -38,7 +38,7 @@ public class Simulator {
         if (realRun) 
             //comm.openConnection();
 
-        machine = new Robot(realMap.getStartX(), realMap.getStartY(),"E", realRun);
+        machine = new Machine(realMap.getStartX(), realMap.getStartY(),"E", realRun);
 
         if (!realRun) {
             realMap = new Arena(machine);

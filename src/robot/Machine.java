@@ -9,7 +9,7 @@ import arena.Arena;
  *
  * @author Kelvin
  */
-public class Robot {
+public class Machine {
     private int currentX;
     private int currentY;
     private String currentF;
@@ -33,7 +33,7 @@ public class Robot {
     private boolean simulationBot;
     
     
-    public Robot(int x,int y,String facing,boolean simulationBot){
+    public Machine(int x,int y,String facing,boolean simulationBot){
         currentX=x;
         currentY=y;
         currentF=facing;
