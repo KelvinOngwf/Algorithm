@@ -144,8 +144,8 @@ public class Exploration {
      */
     private int calculateAreaExplored() {
         int result = 0;
-        for (int x = 0; x < Arena.mapRow; x++) {
-            for (int y = 0; y < Arena.mapCol; y++) {
+        for (int x = 0; x < Arena.arenaX; x++) {
+            for (int y = 0; y < Arena.arenaY; y++) {
                 if (exploredArena.getCell(x, y).getIsVisited()) {
                     result++;
                 }

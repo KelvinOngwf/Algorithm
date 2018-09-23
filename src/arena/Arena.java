@@ -5,35 +5,39 @@
  */
 package arena;
 
-import javax.swing.*;
-import java.awt.*;
-import robot.Robot;
+import robot.*;
 
 /**
  *
  * @author Kelvin
  */
-public class Arena extends JPanel{
+public class Arena{
     
-    public static int mapRow = 20;
-    public static int mapCol = 15;
+    public static int arenaX = 20;
+    public static int arenaY = 15;
     public static int goalX=2;
     public static int goalY=12;
-    public static int startX=17;
-    public static int startY=2;
+    public int startX=17;
+    public int startY=2;
     private Cell c[][];
     private Robot robot;
     
         
     public Arena(Robot robot){
         this.robot=robot;
-        c = new Cell[mapRow][mapCol];
-        for(int i=0;i<mapRow-1;i++){
-            for(int j=0;j<mapCol-1;j++){
+        c = new Cell[arenaX][arenaY];
+        for(int i=0;i<arenaX-1;i++){
+            for(int j=0;j<arenaY-1;j++){
                 c[i][j]=new Cell(i,j);
             }
         }
         defineVirtualWall();
+    }
+    public int getStartX(){
+        return startX;
+    }
+    public int getStartY(){
+        return startY;
     }
     public void defineVirtualWall(){
         for(int i=0;i<15;i++){
@@ -53,8 +57,8 @@ public class Arena extends JPanel{
         return c[x][y].getVirtualWall();
     }
     public void setAllUnexplored(){
-        for(int i=0; i<mapRow;i++)
-            for(int j=0;j<mapCol;j++)
+        for(int i=0; i<arenaX;i++)
+            for(int j=0;j<arenaY;j++)
                 if(goalArea(i,j)||startArea(i,j)){
                     c[i][j].setVisited(true);
                 }
@@ -88,7 +92,7 @@ public class Arena extends JPanel{
         
     }
     public boolean checkValidCell(int x, int y){
-        if(x >= 0 && x < mapRow && y >= 0 && y < mapCol)
+        if(x >= 0 && x < arenaX && y >= 0 && y < arenaY)
             return true;
         return false;
     }
