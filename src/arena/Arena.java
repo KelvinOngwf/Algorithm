@@ -15,10 +15,10 @@ public class Arena{
     
     public static int arenaX = 20;
     public static int arenaY = 15;
-    public static int goalX=2;
-    public static int goalY=12;
-    public int startX=17;
-    public int startY=2;
+    public static int goalX=1;
+    public static int goalY=13;
+    public int startX=18;
+    public int startY=1;
     private Cell c[][];
     private Machine robot;
     
@@ -26,8 +26,8 @@ public class Arena{
     public Arena(Machine robot){
         this.robot=robot;
         c = new Cell[arenaX][arenaY];
-        for(int i=0;i<arenaX-1;i++){
-            for(int j=0;j<arenaY-1;j++){
+        for(int i=0;i<arenaX;i++){
+            for(int j=0;j<arenaY;j++){
                 c[i][j]=new Cell(i,j);
             }
         }
@@ -66,12 +66,12 @@ public class Arena{
                     c[i][j].setVisited(false);                
     }
     public boolean goalArea(int x,int y){
-        if(x==2 && y==12)
+        if(x==goalX && y==goalY)
             return true;
         return false;
     }
     public boolean startArea(int x,int y){
-        if(x==17 && y==2)
+        if(x==startX && y==startY)
             return true;
         return false;
     }
