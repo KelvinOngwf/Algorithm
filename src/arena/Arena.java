@@ -5,7 +5,7 @@
  */
 package arena;
 
-import robot.*;
+import machine.Machine;
 
 /**
  *
@@ -66,14 +66,11 @@ public class Arena{
                     c[i][j].setVisited(false);                
     }
     public boolean goalArea(int x,int y){
-        if(x==goalX && y==goalY)
-            return true;
-        return false;
+
+            return x >= 0 && x<= 2 && y>= 12 && y <=14;
     }
     public boolean startArea(int x,int y){
-        if(x==startX && y==startY)
-            return true;
-        return false;
+            return x >= 17 && x<= 19 && y>= 0 && y <=2;
     }
     public void placeObstacle(int x, int y,boolean obstacle){
         c[x][y].setObstacle(obstacle);
@@ -91,8 +88,9 @@ public class Arena{
         c[x][y+1].setVirtualWall(obstacle);
         
     }
+    
     public boolean checkValidCell(int x, int y){
-        if(x >= 0 && x < arenaX && y >= 0 && y < arenaY)
+        if(x > 0 && x < arenaX-1 && y > 0 && y < arenaY-1)
             return true;
         return false;
     }

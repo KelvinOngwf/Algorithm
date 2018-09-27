@@ -5,14 +5,18 @@
  */
 package main;
 
+import algo.ExplorationAlgorithm;
+import machine.Machine;
 import arena.*;
-import robot.*;
 import javax.swing.*;
 import java.awt.GridLayout;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  *
@@ -20,43 +24,46 @@ import java.awt.Graphics;
  */
 public class ArenaUI{
 
-    private static int arenaSize = 300;
-    private static int CELL_LINE_WEIGHT = 2;
-    private static Color startColor = Color.BLUE;
-    private static Color goalColor = Color.YELLOW;
-    private static Color unexploredColor = Color.LIGHT_GRAY;
-    private static Color freeSpaceColor = Color.WHITE;
-    private static Color obstacleColor = Color.BLACK;
-    private static Color machineColor = Color.BLACK;
-    private static Color virtualWallColor = Color.PINK;
-    private static Color machineFacingColor = Color.WHITE;
-    private static int machineWidth = 70;
-    private static int machineHeight = 70;
-    private static int machineXOffset = 10;
-    private static int machineYOffset = 20;
-    private static int machineFacingWidth = 10;
-    private static int machineFacingHeight = 10;
-    private static int cellSize = 30;
-    private static int arenaHeight = 600;
-    private static int arenaXOffset = 120;
-    private static JFrame appFrame = null;        // application JFrame
-    private static JButton appBtn = null;    
+    private static JFrame appFrame = null;        // application JFrame   
     private static JPanel panel = null;
     private static Arena realMap = null;              // real map
     private static Arena exploredMap = null;          // exploration map
-    private int timeLimit = 3600;            // time limit
-    private int coverageLimit = 300;         // coverage limit
+    private static int timeLimit = 3600;            // time limit
+    private static int coverageLimit = 300;         // coverage limit
     //private final CommMgr comm = CommMgr.getCommMgr();
     private final boolean realRun = true;
     private static Arena _arena;
     private static Machine _machine;
-    private static ArenaCls as;
+    private static JPanel  drawingPanel = new JPanel(new GridLayout(21,15));
+    private static JPanel container = new JPanel(new BorderLayout());
+    //private static ArenaCls as;
 
     
     
     public static void main(String[] args) {
+        
         populateArena();
+        class Exploration extends SwingWorker<Integer,String>{
+        protected Integer doInBackground() throws Exception {
+                    int x, y;
 
+                    x = _arena.getStartX();
+                    y = _arena.getStartY();
+
+                    _machine.setMachine(x, y);
+
+                    ExplorationAlgorithm exploration;
+                    exploration = new ExplorationAlgorithm(exploredMap, realMap, _machine, coverageLimit, timeLimit);
+
+                    exploration.startExploration();
+                    //generateMapDescriptor(exploredMap);
+
+                    return 111;
+                }
+        }
+        
+        
+        new Exploration().execute();
     }
 
     public static void populateArena(){
@@ -64,118 +71,104 @@ public class ArenaUI{
         _arena = new Arena(_machine);
         _machine = new Machine(_arena.getStartX(),_arena.getStartY(),"E",false);
         
-        as = new ArenaCls(_arena,_machine);
+        //as = new ArenaCls(_arena,_machine);
         
         appFrame  = new JFrame("MDP GRP 25");
-        JPanel simulatorPanel = new JPanel(new GridLayout(20,15));
-        JPanel realPanel = new JPanel(new GridLayout(20,15));
-        JPanel container = new JPanel(new BorderLayout());
         
-
-        for(int i=0; i<20; i++){
-            for(int j=0; j<15; j++){
-                appBtn = new JButton();
-                appBtn.setBounds(j*5,i*5,5,5);
-                simulatorPanel.add(appBtn);
+        appFrame.setResizable(false);
+        JLabel label =null;
+        for(int j=0;j<16;j++)
+        {
+            if(j==0){
+                label = new JLabel(" ");
+                drawingPanel.add(label);
+            }
+            else{
+             label = new JLabel("j"+(j-1));
+             drawingPanel.add(label);
             }
         }
         for(int i=0; i<20; i++){
+              label = new JLabel("i"+i);
+             drawingPanel.add(label);
             for(int j=0; j<15; j++){
-                appBtn = new JButton();
-                appBtn.setBounds(j*5,i*5,5,5);
-                realPanel.add(appBtn);
+                JButton _appBtn = new JButton();
+                _appBtn.setBounds(j*5,i*5,5,5);
+                _appBtn.setToolTipText(i+":"+j);
+                String[] cellCord = _appBtn.getToolTipText().split(":");
+                int cellX = Integer.parseInt(cellCord[0]);
+                int cellY = Integer.parseInt(cellCord[1]);
+                repaintBtn();
+                _appBtn.addMouseListener(new MouseAdapter(){
+                    public void mousePressed(MouseEvent e){
+                        if((_appBtn.getBackground()==ArenaUIConfig.freeSpaceColor||_appBtn.getBackground()==ArenaUIConfig.virtualWallColor)&&_arena.checkValidCell(cellX, cellY)){
+                        _appBtn.setBackground(ArenaUIConfig.obstacleColor);
+                        _arena.placeObstacle(cellX, cellY, true);
+                        }
+                        else if(_appBtn.getBackground()==ArenaUIConfig.obstacleColor){
+                            _appBtn.setBackground(ArenaUIConfig.freeSpaceColor);
+                        _arena.placeObstacle(cellX, cellY, false);
+                        }
+                        repaintBtn();
+                    }
+                });
+                drawingPanel.add(_appBtn);
             }
         }
-        appFrame.add(as);
-        //appFrame.add(container);
+        container.add(drawingPanel,BorderLayout.LINE_START);
+        appFrame.add(container);
         appFrame.setSize(1024, 768);
         appFrame.setVisible(true);
+        repaintBtn();
         appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
     }
-    
-    
-    private static class ArenaCls extends JPanel
-    {
-        private static Arena _arena;
-        private  static Machine _machine;   
-        public ArenaCls(Arena map,Machine machine){
-            this._arena = map;
-            this._machine=machine;
-        }
-        
-        public void paintComponent(Graphics g) {
-        // Create a two-dimensional array of _DisplayCell objects for rendering.
-        DisplayCell[][] _mapCells = new DisplayCell[Arena.arenaX][Arena.arenaY];
-        for (int mapRow = 0; mapRow < Arena.arenaX; mapRow++) {
-            for (int mapCol = 0; mapCol < Arena.arenaY; mapCol++) {
-                _mapCells[mapRow][mapCol] = new DisplayCell(mapCol * cellSize, mapRow * cellSize, cellSize);
-            }
-        }
+    public static void repaintBtn(){
+        for (Component c : drawingPanel.getComponents()) {
+            if (c instanceof JButton) {
+                String[] sBtn = ((JButton) c).getToolTipText().split(":");
+                int cellX = Integer.parseInt(sBtn[0]);
+                int cellY = Integer.parseInt(sBtn[1]);
 
-        // Paint the cells with the appropriate colors.
-        for (int mapRow = 0; mapRow < _arena.arenaX; mapRow++) {
-            for (int mapCol = 0; mapCol < _arena.arenaY; mapCol++) {
-                Color cellColor;
-
-                if (_arena.startArea(mapRow, mapCol))
-                    cellColor =startColor;
-                else if (_arena.goalArea(mapRow, mapCol))
-                    cellColor = goalColor;
-                else {
-                    if (!_arena.getCell(mapCol, mapCol).getIsVisited())
-                        cellColor = unexploredColor;
-                    else if (_arena.getCell(mapCol, mapCol).getIsObstacle())
-                        cellColor = obstacleColor;
-                    else if (_arena.getCell(mapCol, mapCol).getVirtualWall())
-                        cellColor = virtualWallColor;
-                    else
-                        cellColor = freeSpaceColor;
+                JButton temp = (JButton) c;
+                if(_arena.startArea(cellX, cellY)){
+                    temp.setBackground(ArenaUIConfig.startColor);
                 }
-
-                g.setColor(cellColor);
-                g.fillRect(_mapCells[mapRow][mapCol].cellX + arenaXOffset, _mapCells[mapRow][mapCol].cellY, _mapCells[mapRow][mapCol].cellSize, _mapCells[mapRow][mapCol].cellSize);
-
+                else if( _arena.goalArea(cellX, cellY)){
+                    temp.setBackground(ArenaUIConfig.goalColor);
+                }
+                else if(_arena.isObstacle(cellX, cellY)){
+                    temp.setBackground(ArenaUIConfig.obstacleColor);
+                }
+                else if(_arena.isVirtualWall(cellX, cellY)){
+                    temp.setBackground(ArenaUIConfig.virtualWallColor);
+                }
+                else if(!_arena.checkValidCell(cellX, cellY)){
+                    temp.setBackground(ArenaUIConfig.virtualWallColor);
+                }
+                else{
+                    temp.setBackground(ArenaUIConfig.freeSpaceColor);
+                }
             }
         }
-
-        // Paint the robot on-screen.
-        g.setColor(machineColor);
-        int x = _machine.getRobotX();
-        int y = _machine.getRobotY();
-        g.fillOval((y - 1) * cellSize + machineXOffset + arenaXOffset, arenaHeight - (x * cellSize + machineYOffset), machineWidth, machineHeight);
-
-        // Paint the robot's direction indicator on-screen.
-        g.setColor(machineFacingColor);
-        String d = _machine.getRobotFacing();
-        switch (d) {
-            case "N":
-                g.fillOval(y * cellSize + 10 + arenaXOffset, arenaHeight - x * cellSize - 15, machineFacingWidth, machineFacingHeight);
-                break;
-            case "E":
-                g.fillOval(y * cellSize + 35 + arenaXOffset, arenaHeight - x * cellSize + 10, machineFacingWidth, machineFacingHeight);
-                break;
-            case "S":
-                g.fillOval(y * cellSize + 10 + arenaXOffset, arenaHeight - x * cellSize + 35, machineFacingWidth, machineFacingHeight);
-                break;
-            case "W":
-                g.fillOval(y * cellSize - 15 + arenaXOffset, arenaHeight - x * cellSize + 10, machineFacingWidth, machineFacingHeight);
-                break;
+    }
+    public static void paintMachine() {
+        for (Component c : drawingPanel.getComponents()) {
+            if (c instanceof JButton) {
+                int machineX = _machine.getMachineX();
+                int machineY = _machine.getMachineY();
+                JButton temp = (JButton) c;
+                if(_machine.machineSize(machineX, machineY)){
+                    temp.setBackground(ArenaUIConfig.machineColor);
+                }
+                if(_machine.machineFacingCell(machineX, machineY)){
+                    temp.setBackground(ArenaUIConfig.machineFacingColor);
+                }
+                
+                repaintBtn();
+            }
         }
     }
-
-    private static class DisplayCell {
-        public final int cellX;
-        public final int cellY;
-        public final int cellSize;
-
-        public DisplayCell(int borderX, int borderY, int borderSize) {
-            this.cellX = borderX + CELL_LINE_WEIGHT;
-            this.cellY = borderY - CELL_LINE_WEIGHT;
-            this.cellSize = borderSize - (CELL_LINE_WEIGHT * 2);
-        }
-    }
-    }
-
+    
 }
 

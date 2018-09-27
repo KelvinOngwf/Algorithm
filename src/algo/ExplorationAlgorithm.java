@@ -5,125 +5,154 @@
  */
 package algo;
 
+import machine.Machine;
 import arena.*;
-import robot.*;
+import main.ArenaUI;
 
 /**
  *
  * @author Kelvin
  */
-public class Exploration {
+public class ExplorationAlgorithm {
     private Arena exploredArena;
     private Arena realArena;
-    private Machine robot;
+    private Machine machine;
     private int exploreLimit;
     private int timeLimit;
     private int areaExplored;
     private long startTime;
     private long endTime;
     
-    public Exploration(Arena exploredArena,Arena realArena, Machine robot,int exploreLimit, int timeLimit){
+    public ExplorationAlgorithm(Arena exploredArena,Arena realArena, Machine machine,int exploreLimit, int timeLimit){
         this.exploredArena= exploredArena;
         this.realArena=realArena;
-        this.robot=robot;
+        this.machine=machine;
         this.exploreLimit=exploreLimit;
         this.timeLimit=timeLimit;
     }
     public void startExploration(){
-        if(!robot.getSimulationBot()){
+        if(!machine.getSimulationMachine()){
             
         }
+        System.out.println("Starting exploration...");
+
+        startTime = System.currentTimeMillis();
+        endTime = startTime + (timeLimit * 1000);
+        
+
+        areaExplored = calculateAreaExplored();
+        System.out.println("Explored Area: " + areaExplored);
+
+        explorationLoop(machine.getMachineX(), machine.getMachineY());
+        
+        machine.moveForward();
+        System.out.print(machine.getMachineX() +  " : " + machine.getMachineY());
+        
     }
     // need rename lol
     private void explorationLoop(int x, int y){
-        while(areaExplored <= exploreLimit && System.currentTimeMillis()<= endTime){
-            moveAlgo();
+        do {
             
+            
+            
+            
+
             areaExplored = calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);
 
-            if (robot.getRobotX() == x && robot.getRobotY() == y) {
+            if (machine.getMachineX()== x && machine.getMachineY() == y) {
                 if (areaExplored >= 100) {
                     break;
                 }
             }
+            ArenaUI.paintMachine();
+        } while (areaExplored <= exploreLimit && System.currentTimeMillis() <= endTime);
+            
+            
         }
-    }
+        //goBackToStart();
+    
     private void moveAlgo(){
         if (lookRight()) {
-            robot.turnRight();
+            machine.turnRight();
             if (lookForward()) 
-                robot.moveForward();
+                machine.moveForward();
         } else if (lookForward()) {
-            robot.moveForward();
+            machine.moveForward();
         } else if (lookLeft()) {
-            robot.turnLeft();
+            machine.turnLeft();
             if (lookForward()) 
-                robot.moveForward();
+                machine.moveForward();
         } else {
-            robot.turnRight();
-            robot.turnRight();
+            machine.turnRight();
+            machine.turnRight();
         }
     }
     private boolean lookLeft() {
-        switch (robot.getRobotFacing()) {
+        switch (machine.getMachineFacing()) {
             case "N":
                 return westClear();
-            case "S":
-                return eastClear();
             case "E":
                 return northClear();
+            case "S":
+                return eastClear();
+
             case "W":
                 return southClear();
         }
         return false;
     }
+
     private boolean lookRight() {
-        switch (robot.getRobotFacing()) {
+        switch (machine.getMachineFacing()) {
             case "N":
                 return eastClear();
-            case "S":
-                return westClear();
             case "E":
                 return southClear();
+            case "S":
+                return westClear();
+
             case "W":
                 return northClear();
         }
         return false;
     }
+
     private boolean lookForward() {
-        switch (robot.getRobotFacing()) {
+        switch (machine.getMachineFacing()) {
             case "N":
                 return northClear();
-            case "S":
-                return southClear();
             case "E":
                 return eastClear();
+            case "S":
+                return southClear();
+
             case "W":
                 return westClear();
         }
         return false;
     }
     private boolean northClear(){
-        int x=robot.getRobotX();
-        int y=robot.getRobotY();
+        int x=machine.getMachineX();
+        int y=machine.getMachineY();
         return(isExploredAndNotObstacle(x-1,y-1)&&isExploredAndNotObstacle(x-1,y+1)&&isExploredAndIsFree(x+1,y));
     }
     private boolean southClear(){
-        int x=robot.getRobotX();
-        int y=robot.getRobotY();
+        int x=machine.getMachineX();
+        int y=machine.getMachineY();
         return(isExploredAndNotObstacle(x+1,y-1)&&isExploredAndNotObstacle(x+1,y+1)&&isExploredAndIsFree(x+1,y));
     }
     private boolean eastClear(){
-        int x=robot.getRobotX();
-        int y=robot.getRobotY();
+        int x=machine.getMachineX();
+        int y=machine.getMachineY();
         return(isExploredAndNotObstacle(x-1,y+1)&&isExploredAndNotObstacle(x+1,y+1)&&isExploredAndIsFree(x,y+1));
     }
     private boolean westClear(){
-        int x=robot.getRobotX();
-        int y=robot.getRobotY();
+        int x=machine.getMachineX();
+        int y=machine.getMachineY();
         return(isExploredAndNotObstacle(x-1,y-1)&&isExploredAndNotObstacle(x+1,y-1)&&isExploredAndIsFree(x,y-1));
     }
+    
     private boolean isExploredAndNotObstacle(int x, int y) {
         if (exploredArena.checkValidCell(x, y)) {
             Cell temp = exploredArena.getCell(x, y);

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package robot;
+package machine;
 import arena.Arena;
 /**
  *
@@ -30,15 +30,15 @@ public class Machine {
     private int sensorShortRangeLowerRange = 1;
     private int sensorLongRangeUpperRange = 4;
     private int sensorLongRangeLowerRange = 3;
-    private boolean simulationBot;
+    private boolean simulationMachine;
     
     
-    public Machine(int x,int y,String facing,boolean simulationBot){
+    public Machine(int x,int y,String facing,boolean simulationMachine){
         currentX=x;
         currentY=y;
         currentF=facing;
         reachedGoal=false;
-        this.simulationBot=simulationBot;
+        this.simulationMachine=simulationMachine;
         sensorR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SR");
         sensorFR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFR");
         sensorFC = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFC");
@@ -47,17 +47,21 @@ public class Machine {
         sensorLL = new Sensor(sensorLongRangeUpperRange,sensorLongRangeLowerRange,"SLL");
         
     }
-    public int getRobotX(){
+    public int getMachineX(){
         return currentX;
     }
-    public int getRobotY(){
+    public int getMachineY(){
         return currentY;
     }
-    public String getRobotFacing(){
+    public void setMachine(int x, int y){
+        currentX =x;
+        currentY=y;
+    }
+    public String getMachineFacing(){
         return currentF;
     }
-    public boolean getSimulationBot(){
-        return simulationBot;
+    public boolean getSimulationMachine(){
+        return simulationMachine;
     }
     public void reachedGoal(){
         if(currentX==Arena.goalX && currentY==Arena.goalY)
@@ -65,6 +69,22 @@ public class Machine {
     }
     public boolean getReachedGoal(){
         return reachedGoal;
+    }
+    public boolean machineSize(int x,int y){
+            return x >= currentX-1 && x<= currentX +1 && y>= currentY-1 && y <=currentY+1;
+    }
+    public boolean machineFacingCell(int x,int y){
+        switch (currentF) {
+            case "N":
+                return x == currentX - 1 && y == currentY;
+            case "S":
+                return x == currentX + 1 && y == currentY;
+            case "E":
+                return x == currentX && y == currentY + 1;
+            case "W":
+                return x == currentX && y == currentY - 1;
+        }
+        return false;
     }
     public void moveForward(){
         switch(currentF){
@@ -114,12 +134,12 @@ public class Machine {
                 currentF="W";
                 break;
             //move down
-            case "S" :
-                currentF="E";
-                break;
-            //move right
             case "E" :
                 currentF="N";
+                break;
+            //move right
+            case "S" :
+                currentF="E";
                 break;
             //move left
             case "W" :
@@ -135,12 +155,12 @@ public class Machine {
                 currentF="E";
                 break;
             //move down
-            case "S" :
-                currentF="W";
-                break;
-            //move right
             case "E" :
                 currentF="S";
+                break;
+            //move right
+            case "S" :
+                currentF="W";
                 break;
             //move left
             case "W" :
@@ -213,7 +233,7 @@ public class Machine {
     }
     public int[] detect(Arena exploredArena, Arena realArena) {
         int[] result = new int[6];
-        if (simulationBot) {
+        if (simulationMachine) {
             result[0] = sensorR.virtualDetect(exploredArena, realArena);
             result[1] = sensorFR.virtualDetect(exploredArena, realArena);
             result[2] = sensorFC.virtualDetect(exploredArena, realArena);
@@ -224,8 +244,6 @@ public class Machine {
         else{
             //real detection not yet input
         }
-
-
         return result;
     }
 }
