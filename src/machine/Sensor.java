@@ -33,12 +33,12 @@ public class Sensor {
         switch(sensorF){
             case "N" :
                 return getSensorVal(exploredArena, realArena, 1, 0);
-            //move down
-            case "S" :
-                return getSensorVal(exploredArena, realArena, -1, 0);
             //move right
             case "E" :
                 return getSensorVal(exploredArena, realArena, 0, 1);
+                //move down
+            case "S" :
+                return getSensorVal(exploredArena, realArena, -1, 0);
             //move left
             case "W" :
                 return getSensorVal(exploredArena, realArena, 0, -1); 

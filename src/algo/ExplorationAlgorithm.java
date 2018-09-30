@@ -39,24 +39,18 @@ public class ExplorationAlgorithm {
         startTime = System.currentTimeMillis();
         endTime = startTime + (timeLimit * 1000);
         
-
+        senseAndRepaint();
         areaExplored = calculateAreaExplored();
         System.out.println("Explored Area: " + areaExplored);
 
         explorationLoop(machine.getMachineX(), machine.getMachineY());
-        
-        machine.moveForward();
-        System.out.print(machine.getMachineX() +  " : " + machine.getMachineY());
-        
+
     }
     // need rename lol
     private void explorationLoop(int x, int y){
         do {
-            
-            
-            
-            
-
+            moveAlgo();
+            senseAndRepaint();
             areaExplored = calculateAreaExplored();
             System.out.println("Area explored: " + areaExplored);
 
@@ -65,7 +59,7 @@ public class ExplorationAlgorithm {
                     break;
                 }
             }
-            ArenaUI.paintMachine();
+            
         } while (areaExplored <= exploreLimit && System.currentTimeMillis() <= endTime);
             
             
@@ -166,6 +160,12 @@ public class ExplorationAlgorithm {
             return (temp.getIsVisited() && !temp.getVirtualWall() && !temp.getIsObstacle());
         }
         return false;
+    }
+    private void senseAndRepaint() {
+        machine.setSensors();
+        machine.detect(exploredArena, realArena);
+        ArenaUI.repaintBtn();
+        ArenaUI.paintMachine();
     }
 
     /**

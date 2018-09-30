@@ -77,10 +77,10 @@ public class Machine {
         switch (currentF) {
             case "N":
                 return x == currentX - 1 && y == currentY;
-            case "S":
-                return x == currentX + 1 && y == currentY;
             case "E":
                 return x == currentX && y == currentY + 1;
+            case "S":
+                return x == currentX + 1 && y == currentY;
             case "W":
                 return x == currentX && y == currentY - 1;
         }

@@ -66,7 +66,6 @@ public class Arena{
                     c[i][j].setVisited(false);                
     }
     public boolean goalArea(int x,int y){
-
             return x >= 0 && x<= 2 && y>= 12 && y <=14;
     }
     public boolean startArea(int x,int y){
@@ -90,7 +89,7 @@ public class Arena{
     }
     
     public boolean checkValidCell(int x, int y){
-        if(x > 0 && x < arenaX-1 && y > 0 && y < arenaY-1)
+        if(x >= 0 && x < arenaX && y >= 0 && y < arenaY)
             return true;
         return false;
     }
