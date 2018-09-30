@@ -5,6 +5,8 @@
  */
 package machine;
 import arena.Arena;
+import java.util.concurrent.TimeUnit;
+import machine.MachineConfig.FACING;
 /**
  *
  * @author Kelvin
@@ -12,39 +14,39 @@ import arena.Arena;
 public class Machine {
     private int currentX;
     private int currentY;
-    private String currentF;
+    private FACING currentF;
     private boolean reachedGoal;
+    private int speed;
+    public static boolean simulationMachine;
     //right sensor
-    private Sensor sensorR;
+    public static Sensor sensorR;
     //front right sensor
-    private Sensor sensorFR;
+    public static Sensor sensorFR;
     //front centre sensor
-    private Sensor sensorFC;
+    public static Sensor sensorFC;
     //front left sensor
-    private Sensor sensorFL;
+    public static Sensor sensorFL;
     //left sendor
-    private Sensor sensorL;
+    public static Sensor sensorL;
     //left Long range sensor
-    private Sensor sensorLL;
-    private int sensorShortRangeUpperRange = 2;
-    private int sensorShortRangeLowerRange = 1;
-    private int sensorLongRangeUpperRange = 4;
-    private int sensorLongRangeLowerRange = 3;
-    private boolean simulationMachine;
+    public static Sensor sensorLL;
     
     
-    public Machine(int x,int y,String facing,boolean simulationMachine){
+    
+    
+    public Machine(int x,int y,FACING facing,boolean simulationMachine){
         currentX=x;
         currentY=y;
+        this.speed =MachineConfig.speed;
         currentF=facing;
         reachedGoal=false;
         this.simulationMachine=simulationMachine;
-        sensorR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SR");
-        sensorFR = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFR");
-        sensorFC = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFC");
-        sensorFL = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SFL");
-        sensorL = new Sensor(sensorShortRangeUpperRange,sensorShortRangeLowerRange,"SL");
-        sensorLL = new Sensor(sensorLongRangeUpperRange,sensorLongRangeLowerRange,"SLL");
+        sensorR = new Sensor(MachineConfig.sensorShortRangeUpperRange,MachineConfig.sensorShortRangeLowerRange,"SR");
+        sensorFR = new Sensor(MachineConfig.sensorShortRangeUpperRange,MachineConfig.sensorShortRangeLowerRange,"SFR");
+        sensorFC = new Sensor(MachineConfig.sensorShortRangeUpperRange,MachineConfig.sensorShortRangeLowerRange,"SFC");
+        sensorFL = new Sensor(MachineConfig.sensorShortRangeUpperRange,MachineConfig.sensorShortRangeLowerRange,"SFL");
+        sensorL = new Sensor(MachineConfig.sensorShortRangeUpperRange,MachineConfig.sensorShortRangeLowerRange,"SL");
+        sensorLL = new Sensor(MachineConfig.sensorLongRangeUpperRange,MachineConfig.sensorLongRangeLowerRange,"SLL");
         
     }
     public int getMachineX(){
@@ -57,7 +59,7 @@ public class Machine {
         currentX =x;
         currentY=y;
     }
-    public String getMachineFacing(){
+    public FACING getMachineFacing(){
         return currentF;
     }
     public boolean getSimulationMachine(){
@@ -75,129 +77,164 @@ public class Machine {
     }
     public boolean machineFacingCell(int x,int y){
         switch (currentF) {
-            case "N":
+            case NORTH:
                 return x == currentX - 1 && y == currentY;
-            case "E":
+            case EAST:
                 return x == currentX && y == currentY + 1;
-            case "S":
+            case SOUTH:
                 return x == currentX + 1 && y == currentY;
-            case "W":
+            case WEST:
                 return x == currentX && y == currentY - 1;
         }
         return false;
     }
     public void moveForward(){
+        if (simulationMachine) {
+            // Emulate real movement by pausing execution.
+            try {
+                TimeUnit.MILLISECONDS.sleep(speed);
+            } catch (InterruptedException e) {
+                System.out.println("Something went wrong in Robot.move()!");
+            }
+        }
         switch(currentF){
             //move up
-            case "N" :
+            case NORTH :
                 currentX -=1;
                 break;
             //move down
-            case "S" :
+            case SOUTH :
                 currentX +=1;
                 break;
             //move right
-            case "E" :
+            case EAST :
                 currentY += 1;
                 break;
             //move left
-            case "W" :
+            case WEST :
                 currentY -=1;
                 break;
         }
     }
-    public void moveBackward(){
-        switch(currentF){
-            //move up
-            case "N" :
-                currentX +=1;
-                break;
-            //move down
-            case "S" :
-                currentX -=1;
-                break;
-            //move right
-            case "E" :
-                currentY -= 1;
-                break;
-            //move left
-            case "W" :
-                currentY +=1;
-                break;
-        }
+    public void moveForwardMultiple(int count) {
+        if (count == 1) {
+            moveForward();
+        }/* 
+        else {
+            CommMgr comm = CommMgr.getCommMgr();
+            if (count == 10) {
+                comm.sendMsg("0", CommMgr.INSTRUCTIONS);
+            } else if (count < 10) {
+                comm.sendMsg(Integer.toString(count), CommMgr.INSTRUCTIONS);
+            }*/
+
+            switch (currentF) {
+                case NORTH:
+                    currentX += count;
+                    break;
+                case EAST:
+                    currentY += count;
+                    break;
+                case SOUTH:
+                    currentX += count;
+                    break;
+                case WEST:
+                    currentY += count;
+                    break;
+            }
+
+            //comm.sendMsg(this.getRobotPosRow() + "," + this.getRobotPosCol() + "," + DIRECTION.print(this.getRobotCurDir()), CommMgr.BOT_POS);
+        
     }
+
     public void turnLeft(){
+        if (simulationMachine) {
+            // Emulate real movement by pausing execution.
+            try {
+                TimeUnit.MILLISECONDS.sleep(speed);
+            } catch (InterruptedException e) {
+                System.out.println("Something went wrong in Robot.move()!");
+            }
+        }
         //robot turn left
         switch(currentF){
             //move up
-            case "N" :
-                currentF="W";
+            case NORTH :
+                currentF=FACING.WEST;
                 break;
             //move down
-            case "E" :
-                currentF="N";
+            case EAST :
+                currentF=FACING.NORTH;
                 break;
             //move right
-            case "S" :
-                currentF="E";
+            case SOUTH :
+                currentF=FACING.EAST;
                 break;
             //move left
-            case "W" :
-                currentF="S";
+            case WEST :
+                currentF=FACING.SOUTH;
                 break;
         }
     }
     public void turnRight(){
+        if (simulationMachine) {
+            // Emulate real movement by pausing execution.
+            try {
+                TimeUnit.MILLISECONDS.sleep(speed);
+            } catch (InterruptedException e) {
+                System.out.println("Something went wrong in Robot.move()!");
+            }
+        }
         //robot turn right
         switch(currentF){
             //move up
-            case "N" :
-                currentF="E";
+            case NORTH :
+                currentF=FACING.EAST;
                 break;
             //move down
-            case "E" :
-                currentF="S";
+            case EAST :
+                currentF=FACING.SOUTH;
                 break;
             //move right
-            case "S" :
-                currentF="W";
+            case SOUTH :
+                currentF=FACING.WEST;
                 break;
             //move left
-            case "W" :
-                currentF="N";
+            case WEST :
+                currentF=FACING.NORTH;
                 break;
         }
     }
-    public String setSensorLeft(){
+    public FACING setSensorLeft(){
         switch(currentF){
-            case "N" :
-                return "W";
-            case "S" :
-                return "E";
-            case "E" :
-                return "N";
-            case "W" :
-                return "S";
+            case NORTH :
+                return FACING.WEST;
+            case SOUTH:
+                return FACING.EAST;
+            case EAST :
+                return FACING.NORTH;
+            case WEST :
+                return FACING.SOUTH;
         }
-        return "-1";
+        return FACING.ERROR;
     }
-    public String setSensorRight(){
+    public FACING setSensorRight(){
         switch(currentF){
-            case "N" :
-                return "E";
-            case "S" :
-                return "W";
-            case "E" :
-                return "S";
-            case "W" :
-                return "N";
+            case NORTH :
+                return FACING.EAST;
+            case SOUTH :
+                return FACING.WEST;
+            case EAST :
+                return FACING.SOUTH;
+            case WEST :
+                return FACING.NORTH;
 
         }
-        return "-1";
+        return FACING.ERROR;
     }
     public void setSensors(){
         switch(currentF){
-            case "N":
+            case NORTH:
                 sensorR.setSensor(currentX-1, currentY+1, setSensorRight());
                 sensorFR.setSensor(currentX-1, currentY+1, currentF);
                 sensorFC.setSensor(currentX-1, currentY, currentF);
@@ -205,7 +242,7 @@ public class Machine {
                 sensorL.setSensor(currentX-1, currentY-1, setSensorLeft());
                 sensorLL.setSensor(currentX, currentY-1, setSensorLeft());
                 break;
-            case "S":
+            case SOUTH:
                 sensorR.setSensor(currentX+1, currentY-1, setSensorRight());
                 sensorFR.setSensor(currentX+1, currentY-1, currentF);
                 sensorFC.setSensor(currentX+1, currentY, currentF);
@@ -213,7 +250,7 @@ public class Machine {
                 sensorL.setSensor(currentX+1, currentY+1, setSensorLeft());
                 sensorLL.setSensor(currentX, currentY+1, setSensorLeft());
                 break;
-            case "E":
+            case EAST:
                 sensorR.setSensor(currentX+1, currentY+1, setSensorRight());
                 sensorFR.setSensor(currentX+1, currentY+1, currentF);
                 sensorFC.setSensor(currentX, currentY+1, currentF);
@@ -221,7 +258,7 @@ public class Machine {
                 sensorL.setSensor(currentX-1, currentY+1, setSensorLeft());
                 sensorLL.setSensor(currentX-1, currentY, setSensorLeft());
                 break;
-            case "W":
+            case WEST:
                 sensorR.setSensor(currentX-1, currentY-1, setSensorRight());
                 sensorFR.setSensor(currentX-1, currentY-1, currentF);
                 sensorFC.setSensor(currentX, currentY-1, currentF);

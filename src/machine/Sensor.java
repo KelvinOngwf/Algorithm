@@ -6,6 +6,7 @@
 package machine;
 
 import arena.Arena;
+import machine.MachineConfig.FACING;
 
 /**
  *
@@ -16,7 +17,7 @@ public class Sensor {
     private int lowerRange;
     private int sensorX;
     private int sensorY;
-    private String sensorF;
+    private FACING sensorF;
     private String sensorID;
     
     public Sensor(int upperRange, int lowerRange,String id){
@@ -24,23 +25,23 @@ public class Sensor {
         this.upperRange = upperRange;
         sensorID = id;
     }
-    public void setSensor(int x,int y,String facing){
+    public void setSensor(int x,int y,FACING facing){
         sensorX=x;
         sensorY=y;
         sensorF=facing;
     }
     public int virtualDetect(Arena exploredArena,Arena realArena ){
         switch(sensorF){
-            case "N" :
-                return getSensorVal(exploredArena, realArena, 1, 0);
+            case NORTH :
+                return getSensorVal(exploredArena, realArena, -1, 0);
             //move right
-            case "E" :
+            case EAST :
                 return getSensorVal(exploredArena, realArena, 0, 1);
                 //move down
-            case "S" :
-                return getSensorVal(exploredArena, realArena, -1, 0);
+            case SOUTH :
+                return getSensorVal(exploredArena, realArena, 1, 0);
             //move left
-            case "W" :
+            case WEST :
                 return getSensorVal(exploredArena, realArena, 0, -1); 
         }
         return -1;
@@ -80,16 +81,16 @@ public class Sensor {
     }
      public void realDetect(Arena exploredArena, int sensorVal) {
         switch (sensorF) {
-            case "N":
+            case NORTH:
                 processSensorVal(exploredArena, sensorVal, 1, 0);
                 break;
-            case "S":
+            case SOUTH:
                 processSensorVal(exploredArena, sensorVal, -1, 0);
                 break;
-            case "E":
+            case EAST:
                 processSensorVal(exploredArena, sensorVal, 0, 1);
                 break;
-            case "W":
+            case WEST:
                 processSensorVal(exploredArena, sensorVal, 0, -1);
                 break;
         }

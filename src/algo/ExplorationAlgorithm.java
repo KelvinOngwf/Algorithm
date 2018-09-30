@@ -84,14 +84,14 @@ public class ExplorationAlgorithm {
     }
     private boolean lookLeft() {
         switch (machine.getMachineFacing()) {
-            case "N":
+            case NORTH:
                 return westClear();
-            case "E":
+            case EAST:
                 return northClear();
-            case "S":
+            case SOUTH:
                 return eastClear();
 
-            case "W":
+            case WEST:
                 return southClear();
         }
         return false;
@@ -99,14 +99,14 @@ public class ExplorationAlgorithm {
 
     private boolean lookRight() {
         switch (machine.getMachineFacing()) {
-            case "N":
+            case NORTH:
                 return eastClear();
-            case "E":
+            case EAST:
                 return southClear();
-            case "S":
+            case SOUTH:
                 return westClear();
 
-            case "W":
+            case WEST:
                 return northClear();
         }
         return false;
@@ -114,14 +114,14 @@ public class ExplorationAlgorithm {
 
     private boolean lookForward() {
         switch (machine.getMachineFacing()) {
-            case "N":
+            case NORTH:
                 return northClear();
-            case "E":
+            case EAST:
                 return eastClear();
-            case "S":
+            case SOUTH:
                 return southClear();
 
-            case "W":
+            case WEST:
                 return westClear();
         }
         return false;
@@ -129,7 +129,7 @@ public class ExplorationAlgorithm {
     private boolean northClear(){
         int x=machine.getMachineX();
         int y=machine.getMachineY();
-        return(isExploredAndNotObstacle(x-1,y-1)&&isExploredAndNotObstacle(x-1,y+1)&&isExploredAndIsFree(x+1,y));
+        return(isExploredAndNotObstacle(x-1,y-1)&&isExploredAndNotObstacle(x-1,y+1)&&isExploredAndIsFree(x-1,y));
     }
     private boolean southClear(){
         int x=machine.getMachineX();
