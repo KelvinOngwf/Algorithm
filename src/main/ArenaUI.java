@@ -20,6 +20,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import machine.MachineConfig;
+import machine.MachineConfig.FACING;
 
 /**
  *
@@ -46,7 +48,7 @@ public class ArenaUI {
         _arena = new Arena(_machine);
         exploredMap= new Arena(_machine);
         realMap = new Arena(_machine);
-        _machine = new Machine(_arena.getStartX(), _arena.getStartY(), "E", simulationRun);
+        _machine = new Machine(_arena.getStartX(), _arena.getStartY(), FACING.EAST, simulationRun);
 
         populateArena();
         paintMachine();

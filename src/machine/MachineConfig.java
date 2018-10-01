@@ -16,7 +16,7 @@ public class MachineConfig {
     public static int sensorLongRangeUpperRange = 4;
     public static int sensorLongRangeLowerRange = 3;
     
-    public static int speed;
+    public static int speed = 100;
     public enum FACING {
         NORTH, EAST, SOUTH, WEST, ERROR;
 
