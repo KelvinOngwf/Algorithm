@@ -171,12 +171,10 @@ public class ArenaUI {
             }
             
         }
-<<<<<<< HEAD
+
         
         pane.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
-        
-=======
->>>>>>> master
+
         JButton _appBtn = new JButton("Edit Arena");
         _appBtn.setName("EditBtn");
         _appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -253,10 +251,7 @@ public class ArenaUI {
             }
         });
         buttonsPanel.add(_appBtn);
-<<<<<<< HEAD
-        
-        
-=======
+
         appFrame.setVisible(true);
         appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
@@ -264,58 +259,7 @@ public class ArenaUI {
         
     }
 
-    public static void populateArena() {
-        appFrame = new JFrame("MDP GRP 25");
 
-        appFrame.setResizable(false);
-        JLabel label = null;
-        
-        for (int i = 19; i >=0; i--) {
-            label = new JLabel("  " + i);
-            drawingPanel.add(label);
-            for (int j = 0; j < 15; j++) {
-                JButton _appBtn = new JButton();
-                _appBtn.setBounds(j * 5, i * 5, 5, 5);
-                _appBtn.setToolTipText(i + ":" + j);
-                String[] cellCord = _appBtn.getToolTipText().split(":");
-                int cellX = Integer.parseInt(cellCord[0]);
-                int cellY = Integer.parseInt(cellCord[1]);
-                repaintBtn();
-                _appBtn.addMouseListener(new MouseAdapter() {
-                    public void mousePressed(MouseEvent e) {
-                        if ((_appBtn.getBackground() == ArenaUIConfig.freeSpaceColor || _appBtn.getBackground() == ArenaUIConfig.virtualWallColor) && exploredMap.checkValidCell(cellX, cellY)) {
-                            _appBtn.setBackground(ArenaUIConfig.obstacleColor);
-                            exploredMap.placeObstacle(cellX, cellY, true);
-                            System.out.println(cellX+" "+ cellY);
-                        } else if (_appBtn.getBackground() == ArenaUIConfig.obstacleColor) {
-                            _appBtn.setBackground(ArenaUIConfig.freeSpaceColor);
-                            exploredMap.placeObstacle(cellX, cellY, false);
-                            exploredMap.defineVirtualWall();
-                        }
-                    }
-                });
-                drawingPanel.add(_appBtn);
-            }
-        }
-        for (int j = 0; j < 16; j++) {
-            if (j == 0) {
-                label = new JLabel(" ");
-                drawingPanel.add(label);
-            } else {
-                label = new JLabel("  " + (j - 1));
-                drawingPanel.add(label);
-            }
-        }
-        container.add(drawingPanel, BorderLayout.LINE_START);
-        container.add(buttonsPanel, BorderLayout.LINE_END);
-        appFrame.add(container);
-        appFrame.setSize(1024, 768);
-        
-        repaintBtn();
-        
-
->>>>>>> master
-    }
 
     public static void repaintBtn() {
         for (Component c : drawingPanel.getComponents()) {
