@@ -124,4 +124,8 @@ public class Arena{
      public Cell getCell(int x, int y) {
         return c[x][y];
     }
+
+    public void repaint() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
