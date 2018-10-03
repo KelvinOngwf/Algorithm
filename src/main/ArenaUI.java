@@ -6,6 +6,7 @@
 package main;
 
 import algo.ExplorationAlgorithm;
+import algo.FastestPathAlgorithm;
 import machine.Machine;
 import arena.*;
 import javax.swing.*;
@@ -31,7 +32,7 @@ public class ArenaUI {
     private static int timeLimit = 3600;            // time limit
     private static int coverageLimit = 300;         // coverage limit
     //private final CommMgr comm = CommMgr.getCommMgr();
-    private static final boolean simulationRun = true;
+    private static final boolean simulationRun = false;
     private static Arena _arena;
     private static Machine _machine;
     private static JPanel drawingPanel = new JPanel(new GridLayout(21, 15));
@@ -52,12 +53,21 @@ public class ArenaUI {
         populateArena();
         setPaintBtn();
         paintMachine();
-        
+         CommMgr.getCommMgr().sendMsg("asd", CommMgr.BOT_START);
         addLabelsComponentToPane(inputPanel);
         addButtonsComponentToPane(buttonsPanel);
         
         appFrame.setVisible(true);
         appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        if (!simulationRun) {
+                    while (true) {
+                        System.out.println("Waiting for FP_START...");
+                        String msg = comm.recvMsg();
+                        
+                       
+                        if (msg.equals(CommMgr.FP_START)) break;
+                    }
+                }
     }
 
     public static void populateArena() {
@@ -160,13 +170,38 @@ public class ArenaUI {
 
                 ExplorationAlgorithm exploration;
                 exploration = new ExplorationAlgorithm(exploredMap, realMap, _machine, coverageLimit, timeLimit);
+                
+                if (simulationRun) {
+                    CommMgr.getCommMgr().sendMsg(null, CommMgr.BOT_START);
+                }
 
                 exploration.startExploration();
                 generateMapDescriptor(exploredMap);
 
                 return 111;
             }
-            
+        }
+        class FastestPath extends SwingWorker<Integer, String> {
+            protected Integer doInBackground() throws Exception {
+                _machine.setMachine(_arena.startX, _arena.startY);
+                repaintBtn();
+                paintMachine();
+
+                if (!simulationRun) {
+                    while (true) {
+                        System.out.println("Waiting for FP_START...");
+                        String msg = comm.recvMsg();
+                        if (msg.equals(CommMgr.FP_START)) break;
+                    }
+                }
+
+                FastestPathAlgorithm fastestPath;
+                fastestPath = new FastestPathAlgorithm(exploredMap, _machine);
+
+                fastestPath.runFastestPath(_arena.goalX, _arena.goalY);
+
+                return 222;
+            }
         }
 
         
@@ -215,7 +250,7 @@ public class ArenaUI {
         _appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
         _appBtn.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
-                //new FastestPath().execute();
+                new FastestPath().execute();
             }
         });
         buttonsPanel.add(_appBtn);

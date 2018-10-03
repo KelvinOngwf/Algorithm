@@ -66,9 +66,7 @@ public class ExplorationAlgorithm {
             }
             
         } while (areaExplored <= exploreLimit && System.currentTimeMillis() <= endTime);
-            
             goHome();
-            
         }
         //goBackToStart();
     

@@ -13,7 +13,7 @@ public class MapDescriptor {
 	
 	public static void loadMapFromDisk(Arena arena, String filename) {
 		try {
-			InputStream inputStream = new FileInputStream("arena/" + filename + ".txt");
+			InputStream inputStream = new FileInputStream("map/" + filename + ".txt");
 			BufferedReader buffer = new BufferedReader (new InputStreamReader (inputStream));
 			
 			String line = buffer.readLine();
@@ -33,7 +33,7 @@ public class MapDescriptor {
 				}
 			}
 			
-			// Arena.setAllExplored();
+			//Arena.setAllExplored();
 			
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -279,7 +279,7 @@ public class FastestPathAlgorithm {
 
         ArrayList<MOVEMENT> movements = new ArrayList<>();
 
-        Machine tempBot = new Machine(1, 1,_machine.getMachineFacing(), false);
+        Machine tempBot = new Machine(1, 1,_machine.getMachineFacing(), true);
         tempBot.setSpeed(0);
         while ((tempBot.getMachineX()!= goalRow) || (tempBot.getMachineY() != goalCol)) {
             if (tempBot.getMachineX() == temp.getRow() && tempBot.getMachineY() == temp.getCol()) {
