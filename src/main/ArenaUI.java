@@ -16,7 +16,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import machine.MachineConfig.*;;
 import static main.MapDescriptor.*;
-
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import javax.swing.filechooser.*;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -53,7 +57,7 @@ public class ArenaUI {
         setPaintBtn();
         paintMachine();
         
-        addLabelsComponentToPane(inputPanel);
+        addInputComponentToPane(inputPanel);
         addButtonsComponentToPane(buttonsPanel);
         
         appFrame.setVisible(true);
@@ -110,7 +114,7 @@ public class ArenaUI {
         
         repaintBtn();
     }
-    public static void addLabelsComponentToPane(Container pane){
+    public static void addInputComponentToPane(Container pane){
         JTextField timerInput = new JTextField();
         JTextField coverageInput = new JTextField();
         final JComponent[] limitInputs = new JComponent[]{
@@ -197,7 +201,28 @@ public class ArenaUI {
         };
         buttonsPanel.add(_appBtn);
         
-     
+        final JFileChooser fc = new JFileChooser();
+        fc.setMultiSelectionEnabled(true);
+        fc.setCurrentDirectory(new File("C:\\Users\\Christopher\\Documents\\NTU\\CZ3004 Multi-Disciplinary Project\\Maps"));
+        
+        _appBtn = new JButton("Load Arena");
+        _appBtn.setName("loadBtn");
+        _appBtn.addMouseListener(new MouseAdapter(){
+            public void mousePressed(MouseEvent e){
+                 int retMap = fc.showOpenDialog(appFrame);
+                 if (retMap == JFileChooser.APPROVE_OPTION){
+                     File mapFile = fc.getSelectedFile();
+                     String filename = mapFile.getAbsolutePath().substring(mapFile.getAbsolutePath().lastIndexOf("\\")+1);
+                     System.out.println(filename);
+                     loadMapFromDisk(exploredMap, filename);
+                     setLoadMapPaintBtn();
+                     paintMachine();
+                     
+                 }
+                 
+            }
+        });
+        buttonsPanel.add(_appBtn);
         
         _appBtn = new JButton("Exploration");
         _appBtn.setName("explorationBtn");
@@ -239,6 +264,32 @@ public class ArenaUI {
                     temp.setBackground(ArenaUIConfig.goalColor);
                 } else if (!exploredMap.getCell(cellX, cellY).getIsVisited()) {
                     temp.setBackground(ArenaUIConfig.unexploredColor);
+                } else if(exploredMap.isObstacle(cellX, cellY)){
+                    temp.setBackground(ArenaUIConfig.obstacleColor);
+                }else if (exploredMap.isVirtualWall(cellX, cellY)) {
+                    temp.setBackground(ArenaUIConfig.virtualWallColor);
+                }else {
+                    temp.setBackground(ArenaUIConfig.freeSpaceColor);
+                } 
+                    
+                    
+                
+            }
+        }
+    }
+    public static void setLoadMapPaintBtn() {
+        for (Component c : drawingPanel.getComponents()) {
+            if (c instanceof JButton) {
+                String[] sBtn = ((JButton) c).getToolTipText().split(":");
+                int cellX = Integer.parseInt(sBtn[0]);
+                int cellY = Integer.parseInt(sBtn[1]);
+                exploredMap.defineVirtualWall();
+
+                JButton temp = (JButton) c;
+                if (exploredMap.startArea(cellX, cellY)) {
+                    temp.setBackground(ArenaUIConfig.startColor);
+                } else if (exploredMap.goalArea(cellX, cellY)) {
+                    temp.setBackground(ArenaUIConfig.goalColor);
                 } else if(exploredMap.isObstacle(cellX, cellY)){
                     temp.setBackground(ArenaUIConfig.obstacleColor);
                 }else if (exploredMap.isVirtualWall(cellX, cellY)) {

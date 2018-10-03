@@ -13,7 +13,7 @@ public class MapDescriptor {
 	
 	public static void loadMapFromDisk(Arena arena, String filename) {
 		try {
-			InputStream inputStream = new FileInputStream("arena/" + filename + ".txt");
+			InputStream inputStream = new FileInputStream("Maps/" + filename);
 			BufferedReader buffer = new BufferedReader (new InputStreamReader (inputStream));
 			
 			String line = buffer.readLine();
@@ -27,7 +27,7 @@ public class MapDescriptor {
 			String bin = sb.toString();
 			int binPtr = 0;
 			for (int x = Arena.arenaX - 1; x >= 0; x--) {
-				for (int y = Arena.arenaY - 1; y>=0; y++) {
+				for (int y = 0; y < Arena.arenaY; y++) {
 					if (bin.charAt(binPtr) == '1') arena.placeObstacle(x ,y, true);
 					binPtr++;
 				}
