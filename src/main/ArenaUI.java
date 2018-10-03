@@ -163,6 +163,35 @@ public class ArenaUI {
             }
         });
         inputPanel.add(_appBtn);
+        
+        JTextField newMessageInput = new JTextField();
+        final JComponent[] messageInput = new JComponent[]{
+            new JLabel("Type your message: "), newMessageInput
+        };
+        JButton _appBtn2 = new JButton("Input Message");
+        _appBtn2.setName("InputMessage");
+        _appBtn2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        _appBtn2.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                int result = JOptionPane.showConfirmDialog(null, messageInput, "Input Message", JOptionPane.PLAIN_MESSAGE);
+                if (result == JOptionPane.OK_OPTION){
+                    System.out.println("Input Message: " + newMessageInput.getText());
+                } 
+                else {
+                    System.out.println("User cancelled / closed dialog");
+                }
+                
+                if (!newMessageInput.getText().equals("")){
+                    String newMessageString = newMessageInput.getText();
+                    String msgType = "MAP_STRINGS";
+                    comm.sendMsg(newMessageString, msgType);
+                } 
+                
+                
+            }
+        });
+        inputPanel.add(_appBtn2);
+        
     }
     
     public static void addButtonsComponentToPane(Container pane){
