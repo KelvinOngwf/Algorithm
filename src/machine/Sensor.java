@@ -33,13 +33,13 @@ public class Sensor {
     public int virtualDetect(Arena exploredArena,Arena realArena ){
         switch(sensorF){
             case NORTH :
-                return getSensorVal(exploredArena, realArena, 1, 0);
+                return getSensorVal(exploredArena, realArena, -1, 0);
             //move right
             case EAST :
                 return getSensorVal(exploredArena, realArena, 0, 1);
                 //move down
             case SOUTH :
-                return getSensorVal(exploredArena, realArena, -1, 0);
+                return getSensorVal(exploredArena, realArena, 1, 0);
             //move left
             case WEST :
                 return getSensorVal(exploredArena, realArena, 0, -1); 

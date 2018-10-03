@@ -18,7 +18,7 @@ public class MachineConfig {
     
     public static int speed = 100;
     public enum FACING {
-        NORTH, EAST, SOUTH, WEST;
+        NORTH, EAST, SOUTH, WEST, ERROR;
 
         public static FACING getNext(FACING curFacing) {
             return values()[(curFacing.ordinal() + 1) % values().length];
@@ -40,27 +40,6 @@ public class MachineConfig {
                     return 'W';
                 default:
                     return 'X';
-            }
-        }
-    }
-    public enum MOVEMENT {
-        FORWARD, BACKWARD, RIGHT, LEFT, CALIBRATE, ERROR;
-
-        public static char print(MOVEMENT m) {
-            switch (m) {
-                case FORWARD:
-                    return 'F';
-                case BACKWARD:
-                    return 'B';
-                case RIGHT:
-                    return 'R';
-                case LEFT:
-                    return 'L';
-                case CALIBRATE:
-                    return 'C';
-                case ERROR:
-                default:
-                    return 'E';
             }
         }
     }
