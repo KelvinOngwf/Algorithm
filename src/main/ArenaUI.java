@@ -9,7 +9,13 @@ import algo.ExplorationAlgorithm;
 import machine.Machine;
 import arena.*;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.GridLayout;
+import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -34,8 +40,7 @@ public class ArenaUI {
     private static Arena _arena;
     private static Machine _machine;
     private static JPanel drawingPanel = new JPanel(new GridLayout(21, 15));
-    private static JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    private static JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    private static JPanel buttonsPanel = new JPanel(new FlowLayout());
     private static JPanel container = new JPanel(new BorderLayout());
     //private static ArenaCls as;
 
@@ -47,16 +52,70 @@ public class ArenaUI {
 
         populateArena();
         paintMachine();
-             
-        addLabelsComponentToPane(inputPanel);
-        addButtonsComponentToPane(buttonsPanel);
-        
-        appFrame.setVisible(true);
-        appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
+        class Exploration extends SwingWorker<Integer, String> {
+            protected Integer doInBackground() throws Exception {
+                int x, y;
+
+                x = _arena.getStartX();
+                y = _arena.getStartY();
+
+                _machine.setMachine(x, y);
+
+                ExplorationAlgorithm exploration;
+                exploration = new ExplorationAlgorithm(exploredMap, realMap, _machine, coverageLimit, timeLimit);
+
+                exploration.startExploration();
+                //generateMapDescriptor(exploredMap);
+
+                return 111;
+            }
+        }
+
+        JButton _appBtn = new JButton("Edit Arena");
+        _appBtn.setName("EditBtn");
+        _appBtn.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                for (Component c : drawingPanel.getComponents()) {
+                    if (c instanceof JPanel) {
+                        c.setEnabled(true);
+                    }
+                }
+            }
+        });
+        buttonsPanel.add(_appBtn);
+        _appBtn = new JButton("Save Arena");
+        _appBtn.setName("savrBtn");
+        ActionListener actionListener = new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) {
+                String command = actionEvent.getActionCommand();
+                System.out.println("Selected: " + command);
+            }
+        };
+        buttonsPanel.add(_appBtn);
+        _appBtn = new JButton("Exploration");
+        _appBtn.setName("explorationBtn");
+        _appBtn.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                new Exploration().execute();
+            }
+        });
+        buttonsPanel.add(_appBtn);
+        _appBtn = new JButton("Fastest Path");
+        _appBtn.setName("FastestPathBtn");
+        _appBtn.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                //new FastestPath().execute();
+            }
+        });
+        buttonsPanel.add(_appBtn);
+
     }
 
     public static void populateArena() {
+
+        
+
         appFrame = new JFrame("MDP GRP 25");
 
         appFrame.setResizable(false);
@@ -96,153 +155,14 @@ public class ArenaUI {
                 drawingPanel.add(_appBtn);
             }
         }
-        container.add(inputPanel, BorderLayout.PAGE_START);
-        container.add(drawingPanel, BorderLayout.CENTER);
-        container.add(buttonsPanel, BorderLayout.PAGE_END);
+        container.add(drawingPanel, BorderLayout.LINE_START);
+        container.add(buttonsPanel, BorderLayout.LINE_END);
         appFrame.add(container);
-        appFrame.setSize(768, 1024);
+        appFrame.setSize(1024, 768);
+        appFrame.setVisible(true);
         repaintBtn();
-        
+        appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    }
-    
-    public static void addLabelsComponentToPane(Container pane){
-        JTextField timerInput = new JTextField();
-        JTextField coverageInput = new JTextField();
-        final JComponent[] limitInputs = new JComponent[]{
-          new JLabel("Timer Limit (s)"), timerInput, new JLabel("Coverage Limit (%)"), coverageInput
-        }; 
-        
-        JButton _appBtn = new JButton("Input Limits");
-        _appBtn.setName("InputLimits");
-        _appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        _appBtn.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                int result = JOptionPane.showConfirmDialog(null, limitInputs, "Input Limits", JOptionPane.PLAIN_MESSAGE);
-                if (result == JOptionPane.OK_OPTION){
-                    System.out.println("Timer Limit: " + timerInput.getText() + "\n Coverage Limit: " + coverageInput.getText());
-                } 
-                else {
-                    System.out.println("User cancelled / closed dialog");
-                }
-                
-                if (!timerInput.getText().equals("")){
-                    int newTimerLimit = Integer.parseInt(timerInput.getText());
-                    timeLimit = newTimerLimit;
-                } 
-                
-                if (!coverageInput.getText().equals("")){
-                    int newCoverageLimit = Integer.parseInt(coverageInput.getText());
-                    newCoverageLimit = newCoverageLimit*3;
-                    coverageLimit = newCoverageLimit;
-                }
-                System.out.println(timeLimit);
-                System.out.println(coverageLimit);   
-            }
-        });
-        inputPanel.add(_appBtn);
-    }
-    
-    public static void addButtonsComponentToPane(Container pane){
-        
-        class Exploration extends SwingWorker<Integer, String> {
-            protected Integer doInBackground() throws Exception {
-                int x, y;
-
-                x = _arena.getStartX();
-                y = _arena.getStartY();
-
-                _machine.setMachine(x, y);
-
-                ExplorationAlgorithm exploration;
-                exploration = new ExplorationAlgorithm(exploredMap, realMap, _machine, coverageLimit, timeLimit);
-
-                exploration.startExploration();
-                //generateMapDescriptor(exploredMap);
-
-                return 111;
-            }
-        }
-        
-        pane.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
-        
-        JButton _appBtn = new JButton("Edit Arena");
-        _appBtn.setName("EditBtn");
-        _appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        _appBtn.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                for (Component c : drawingPanel.getComponents()) {
-                    if (c instanceof JPanel) {
-                        c.setEnabled(true);
-                    }
-                }
-            }
-        });
-        buttonsPanel.add(_appBtn);
-        
-        _appBtn = new JButton("Save Arena");
-        _appBtn.setName("savrBtn");
-        _appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        ActionListener actionListener = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                String command = actionEvent.getActionCommand();
-                System.out.println("Selected: " + command);
-            }
-        };
-        buttonsPanel.add(_appBtn);
-        
-        _appBtn = new JButton("Load Arena");
-        _appBtn.setName("loadBtn");
-        _appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        _appBtn.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                JDialog loadMapDialog = new JDialog(_appFrame, "Load Map", true);
-                loadMapDialog.setSize(400, 60);
-                loadMapDialog.setLayout(new FlowLayout());
-
-                final JTextField loadTF = new JTextField(15);
-                JButton loadMapButton = new JButton("Load");
-                
-                loadMapButton.addMouseListener(new MouseAdapter() {
-                    public void mousePressed(MouseEvent e) {
-                        loadMapDialog.setVisible(false);
-                        loadMapFromDisk(realMap, loadTF.getText());
-                        CardLayout cl = ((CardLayout) _mapCards.getLayout());
-                        cl.show(_mapCards, "REAL_MAP");
-                        realMap.repaint();
-                    }
-                });
-                
-                loadMapDialog.add(new JLabel("File Name: "));
-                loadMapDialog.add(loadTF);
-                loadMapDialog.add(loadMapButton);
-                loadMapDialog.setVisible(true);
-                
-            }
-        });
-        buttonsPanel.add(_appBtn);
-        
-        _appBtn = new JButton("Exploration");
-        _appBtn.setName("explorationBtn");
-        _appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        _appBtn.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                new Exploration().execute();
-            }
-        });
-        buttonsPanel.add(_appBtn);
-        
-        _appBtn = new JButton("Fastest Path");
-        _appBtn.setName("FastestPathBtn");
-        _appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        _appBtn.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                //new FastestPath().execute();
-            }
-        });
-        buttonsPanel.add(_appBtn);
-        
-        
     }
 
     public static void repaintBtn() {
