@@ -22,6 +22,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import machine.MachineConfig;
 import machine.MachineConfig.FACING;
+import static main.MapDescriptor.generateMapDescriptor;
+import static main.MapDescriptor.loadMapFromDisk;
+
 
 /**
  *
@@ -42,15 +45,19 @@ public class ArenaUI {
     private static JPanel drawingPanel = new JPanel(new GridLayout(21, 15));
     private static JPanel buttonsPanel = new JPanel(new FlowLayout());
     private static JPanel container = new JPanel(new BorderLayout());
+    private static final CommMgr comm = CommMgr.getCommMgr();
     //private static ArenaCls as;
 
     public static void main(String[] args) {
+        if (!simulationRun) comm.openConnection();
         _arena = new Arena(_machine);
         exploredMap= new Arena(_machine);
         realMap = new Arena(_machine);
         _machine = new Machine(_arena.getStartX(), _arena.getStartY(), FACING.EAST, simulationRun);
-
+        //JTextField loadTF = new JTextField(15);
+        //loadMapFromDisk(exploredMap,"SampleArena4");
         populateArena();
+        setPaintBtn();
         paintMachine();
 
         class Exploration extends SwingWorker<Integer, String> {
@@ -66,12 +73,12 @@ public class ArenaUI {
                 exploration = new ExplorationAlgorithm(exploredMap, realMap, _machine, coverageLimit, timeLimit);
 
                 exploration.startExploration();
-                //generateMapDescriptor(exploredMap);
+                generateMapDescriptor(exploredMap);
 
                 return 111;
             }
+            
         }
-
         JButton _appBtn = new JButton("Edit Arena");
         _appBtn.setName("EditBtn");
         _appBtn.addMouseListener(new MouseAdapter() {
@@ -98,6 +105,7 @@ public class ArenaUI {
         _appBtn.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 new Exploration().execute();
+
             }
         });
         buttonsPanel.add(_appBtn);
@@ -109,27 +117,20 @@ public class ArenaUI {
             }
         });
         buttonsPanel.add(_appBtn);
-
+        appFrame.setVisible(true);
+        appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        
+        
     }
 
     public static void populateArena() {
-
-        
-
         appFrame = new JFrame("MDP GRP 25");
 
         appFrame.setResizable(false);
         JLabel label = null;
-        for (int j = 0; j < 16; j++) {
-            if (j == 0) {
-                label = new JLabel(" ");
-                drawingPanel.add(label);
-            } else {
-                label = new JLabel("  " + (j - 1));
-                drawingPanel.add(label);
-            }
-        }
-        for (int i = 0; i < 20; i++) {
+        
+        for (int i = 19; i >=0; i--) {
             label = new JLabel("  " + i);
             drawingPanel.add(label);
             for (int j = 0; j < 15; j++) {
@@ -145,23 +146,33 @@ public class ArenaUI {
                         if ((_appBtn.getBackground() == ArenaUIConfig.freeSpaceColor || _appBtn.getBackground() == ArenaUIConfig.virtualWallColor) && exploredMap.checkValidCell(cellX, cellY)) {
                             _appBtn.setBackground(ArenaUIConfig.obstacleColor);
                             exploredMap.placeObstacle(cellX, cellY, true);
+                            System.out.println(cellX+" "+ cellY);
                         } else if (_appBtn.getBackground() == ArenaUIConfig.obstacleColor) {
                             _appBtn.setBackground(ArenaUIConfig.freeSpaceColor);
                             exploredMap.placeObstacle(cellX, cellY, false);
+                            exploredMap.defineVirtualWall();
                         }
-                        setPaintBtn();
                     }
                 });
                 drawingPanel.add(_appBtn);
+            }
+        }
+        for (int j = 0; j < 16; j++) {
+            if (j == 0) {
+                label = new JLabel(" ");
+                drawingPanel.add(label);
+            } else {
+                label = new JLabel("  " + (j - 1));
+                drawingPanel.add(label);
             }
         }
         container.add(drawingPanel, BorderLayout.LINE_START);
         container.add(buttonsPanel, BorderLayout.LINE_END);
         appFrame.add(container);
         appFrame.setSize(1024, 768);
-        appFrame.setVisible(true);
+        
         repaintBtn();
-        appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
 
     }
 
@@ -171,21 +182,25 @@ public class ArenaUI {
                 String[] sBtn = ((JButton) c).getToolTipText().split(":");
                 int cellX = Integer.parseInt(sBtn[0]);
                 int cellY = Integer.parseInt(sBtn[1]);
+                exploredMap.defineVirtualWall();
 
                 JButton temp = (JButton) c;
                 if (exploredMap.startArea(cellX, cellY)) {
                     temp.setBackground(ArenaUIConfig.startColor);
                 } else if (exploredMap.goalArea(cellX, cellY)) {
                     temp.setBackground(ArenaUIConfig.goalColor);
-                } else if (exploredMap.isObstacle(cellX, cellY)) {
-                    temp.setBackground(ArenaUIConfig.obstacleColor);
-                } else if (exploredMap.isVirtualWall(cellX, cellY)) {
-                    temp.setBackground(ArenaUIConfig.virtualWallColor);
-                } else if (exploredMap.getCell(cellX, cellY).getIsVisited()) {
-                    temp.setBackground(ArenaUIConfig.freeSpaceColor);
-                } else {
+                } else if (!exploredMap.getCell(cellX, cellY).getIsVisited()) {
                     temp.setBackground(ArenaUIConfig.unexploredColor);
-                }
+                } else if(exploredMap.isObstacle(cellX, cellY)){
+                    temp.setBackground(ArenaUIConfig.obstacleColor);
+                }else if (exploredMap.isVirtualWall(cellX, cellY)) {
+                    temp.setBackground(ArenaUIConfig.virtualWallColor);
+                }else {
+                    temp.setBackground(ArenaUIConfig.freeSpaceColor);
+                } 
+                    
+                    
+                
             }
         }
     }
@@ -214,6 +229,25 @@ public class ArenaUI {
             }
         }
     }
+    public static void setAllUnexplored () {
+        for (Component c : drawingPanel.getComponents()) {
+            if (c instanceof JButton) {
+                String[] sBtn = ((JButton) c).getToolTipText().split(":");
+                int cellX = Integer.parseInt(sBtn[0]);
+                int cellY = Integer.parseInt(sBtn[1]);
+
+                JButton temp = (JButton) c;
+                if (exploredMap.startArea(cellX, cellY)) {
+                    temp.setBackground(ArenaUIConfig.startColor);
+                } else if (exploredMap.goalArea(cellX, cellY)) {
+                    temp.setBackground(ArenaUIConfig.goalColor);
+                } else {
+                    temp.setBackground(ArenaUIConfig.unexploredColor);
+                }
+            }
+        }
+    }
+    
 
     public static void paintMachine() {
         for (Component c : drawingPanel.getComponents()) {
