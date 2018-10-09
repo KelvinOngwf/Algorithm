@@ -9,9 +9,10 @@ import arena.Arena;
 import machine.MachineConfig.FACING;
 
 /**
- *
- * @author Kelvin
- */
+*
+* @author Kelvin
+* @author Chris
+*/
 public class Sensor {
     private int upperRange;
     private int lowerRange;
@@ -100,7 +101,7 @@ public class Sensor {
      * Sets the correct cells to explored and/or obstacle according to the actual sensor value.
      */
     private void processSensorVal(Arena exploredArena, int sensorVal, int x, int y) {
-        if (sensorVal == 0) return;  // return value for LR sensor if obstacle before lowerRange
+        if (sensorVal == 999) return;  // return value for LR sensor if obstacle before lowerRange
 
         // If above fails, check if starting point is valid for sensors with lowerRange > 1.
         for (int i = 1; i < this.lowerRange; i++) {
@@ -120,7 +121,7 @@ public class Sensor {
 
             exploredArena.getCell(row, col).setVisited(true);
 
-            if (sensorVal == i) {
+            if (sensorVal +1 == i) {
                 exploredArena.placeObstacle(row, col, true);
                 break;
             }

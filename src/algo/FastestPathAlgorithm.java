@@ -10,16 +10,11 @@ import java.util.Stack;
 import machine.MachineConfig.*;
 import main.ArenaUI;
 
-// @formatter:off
 /**
- * Fastest path algorithm for the robot. Uses a version of the A* algorithm.
- *
- * g(n) = Real Cost from START to n
- * h(n) = Heuristic Cost from n to GOAL
- *
- * @author Suyash Lakhotia
- */
-// @formatter:on
+*
+* @author Kelvin
+* @author Chris
+*/
 
 public class FastestPathAlgorithm {
     private ArrayList<Cell> toVisit;        // array of Cells to be visited
@@ -256,6 +251,7 @@ public class FastestPathAlgorithm {
     private Stack<Cell> getPath(int goalRow, int goalCol) {
         Stack<Cell> actualPath = new Stack<>();
         Cell temp = exploredMap.getCell(goalRow, goalCol);
+        actualPath.push(exploredMap.getCell(_machine.getMachineX(), _machine.getMachineY()));
 
         while (true) {
             actualPath.push(temp);
@@ -264,7 +260,6 @@ public class FastestPathAlgorithm {
                 break;
             }
         }
-
         return actualPath;
     }
 
@@ -279,12 +274,15 @@ public class FastestPathAlgorithm {
 
         ArrayList<MOVEMENT> movements = new ArrayList<>();
 
-        Machine tempBot = new Machine(1, 1,_machine.getMachineFacing(), true);
+        Machine tempBot = new Machine(_machine.getMachineX(),_machine.getMachineY() ,_machine.getMachineFacing(), true);
+        
+        
         tempBot.setSpeed(0);
         while ((tempBot.getMachineX()!= goalRow) || (tempBot.getMachineY() != goalCol)) {
             if (tempBot.getMachineX() == temp.getRow() && tempBot.getMachineY() == temp.getCol()) {
                 temp = path.pop();
             }
+            
 
             targetDir = getTargetDir(tempBot.getMachineX(), tempBot.getMachineY(), tempBot.getMachineFacing(), temp);
 

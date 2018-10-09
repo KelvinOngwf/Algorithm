@@ -8,9 +8,10 @@ package arena;
 import machine.Machine;
 
 /**
- *
- * @author Kelvin
- */
+*
+* @author Kelvin
+* @author Chris
+*/
 public class Arena{
     
     public static int arenaX = 20;
@@ -85,12 +86,10 @@ public class Arena{
             if (y < arenaY - 1) {
                 c[x - 1][y + 1].setVirtualWall(obstacle);    // bottom-right cell
             }
-
             if (y >= 1) {
                 c[x - 1][y - 1].setVirtualWall(obstacle);    // bottom-left cell
             }
         }
-
         if (x < arenaX - 1) {
             c[x + 1][y].setVirtualWall(obstacle);            // top cell
 
@@ -102,15 +101,12 @@ public class Arena{
                 c[x + 1][y - 1].setVirtualWall(obstacle);    // top-left cell
             }
         }
-
         if (y >= 1) {
             c[x][y - 1].setVirtualWall(obstacle);            // left cell
         }
-
         if (y < arenaY - 1) {
             c[x][y + 1].setVirtualWall(obstacle);            // right cell
         }
-        
     }
     public boolean getIsObstacleOrWall(int row, int col) {
         return !checkValidCell(row, col) || getCell(row, col).getIsObstacle();
@@ -123,9 +119,5 @@ public class Arena{
     }
      public Cell getCell(int x, int y) {
         return c[x][y];
-    }
-
-    public void repaint() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

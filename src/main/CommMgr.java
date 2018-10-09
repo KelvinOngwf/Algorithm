@@ -7,17 +7,20 @@ import java.net.UnknownHostException;
 /**
  * Communication manager to communicate with the different parts of the system via the RasPi.
  *
- * @author SuyashLakhotia
+ * @author Kelvin
+ * @author Chris
  */
 
 public class CommMgr {
 
     public static final String EX_START = "EX_START";       // Android --> PC
+    public static final String EX_FINISH= "bEX_FINISH";
     public static final String FP_START = "FP_START";       // Android --> PC
-    public static final String MAP_STRINGS = "MAP";         // PC --> Android
-    public static final String BOT_POS = "BOT_POS";         // PC --> Android
-    public static final String BOT_START = "BOT_START";     // PC --> Arduino
-    public static final String INSTRUCTIONS = "INSTR";      // PC --> Arduino
+    public static final String MAP_STRINGS = "bMAP";         // PC --> Android
+    public static final String MACHINE_POS = "bMACHINE_POS";         // PC --> Android
+    public static final String MACHINE_START = "aZ";     // PC --> Arduino
+    public static final String INSTRUCTION = "aINSTRUCTION";      // PC --> Arduino
+    public static final String AINSTRUCTION = "bINSTRUCTION";       //pc --> Android
     public static final String SENSOR_DATA = "SDATA";       // Arduino --> PC
 
     private static CommMgr commMgr = null;
@@ -89,11 +92,11 @@ public class CommMgr {
         try {
             String outputMsg;
             if (msg == null) {
-                outputMsg = msgType + "\n";
-            } else if (msgType.equals(MAP_STRINGS) || msgType.equals(BOT_POS)) {
-                outputMsg = msgType + " " + msg + "\n";
+                outputMsg = msgType + "\n\n";
+            } else if (msgType.equals(MAP_STRINGS) || msgType.equals(MACHINE_POS)) {
+                outputMsg = msgType + "," + msg + "\n\n";
             } else {
-                outputMsg = msgType + "\n" + msg + "\n";
+                outputMsg = msgType + "," + msg + "\n\n";
             }
 
             System.out.println("Sending out message:\n" + outputMsg);
@@ -109,15 +112,14 @@ public class CommMgr {
 
     public String recvMsg() {
         System.out.println("Receiving a message...");
-
         try {
-            StringBuilder sb = new StringBuilder();
-            String input = reader.readLine();
-
-            if (input != null && input.length() > 0) {
-                sb.append(input);
-                System.out.println(sb.toString());
-                return sb.toString();
+            while(true)
+            {
+                String input = reader.readLine();
+                if(!input.isEmpty()){
+                    System.out.println(input);
+                    return input;
+                }
             }
         } catch (IOException e) {
             System.out.println("recvMsg() --> IOException");

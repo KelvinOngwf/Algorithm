@@ -10,6 +10,7 @@ import java.awt.Color;
 /**
  *
  * @author Kelvin
+ * @author Chris
  */
 public class ArenaUIConfig {
     public static int arenaSize = 300;
