@@ -51,7 +51,6 @@ public class Machine {
         sensorFL = new Sensor(MachineConfig.sensorShortRangeUpperRange, MachineConfig.sensorShortRangeLowerRange, "SFL");
         sensorRB = new Sensor(MachineConfig.sensorShortRangeUpperRange, MachineConfig.sensorShortRangeLowerRange, "SRB");
         sensorLL = new Sensor(MachineConfig.sensorLongRangeUpperRange, MachineConfig.sensorLongRangeLowerRange, "SLL");
-
     }
 
     public int getMachineX() {
@@ -74,6 +73,7 @@ public class Machine {
     public FACING getMachineFacing() {
         return currentF;
     }
+
     public void setMachineFacing(FACING direction) {
         currentF = direction;
     }
@@ -152,7 +152,6 @@ public class Machine {
         } else {
             System.out.println("Move: " + MOVEMENT.print(m));
         }
-
         reachedGoal();
     }
 
@@ -167,17 +166,8 @@ public class Machine {
     private void sendMovement(MOVEMENT m, boolean sendMoveToAndroid) {
         CommMgr comm = CommMgr.getCommMgr();
 
-        try {
-            
-            comm.sendMsg(MOVEMENT.print(m) + "", CommMgr.INSTRUCTION);
-            Thread.sleep(300);
-            comm.sendMsg(MOVEMENT.print(m) + "", CommMgr.AINSTRUCTION);
-            Thread.sleep(300);
-            comm.sendMsg(getMachineX() + "," + getMachineY() + "," + FACING.print(getMachineFacing()), CommMgr.MACHINE_POS);
-            Thread.sleep(300);
-        } catch (Exception e) {
-
-        }
+            comm.sendMsg(MOVEMENT.print(m)+";"+ getMachineX() + "," + getMachineY() + "," + FACING.print(getMachineFacing()) + "", CommMgr.INSTRUCTION);
+            //comm.sendMsg(MOVEMENT.print(m) + "", CommMgr.AINSTRUCTION);
     }
 
     public void move(MOVEMENT m) {
@@ -190,13 +180,10 @@ public class Machine {
         } else {
             CommMgr comm = CommMgr.getCommMgr();
             if (count == 10) {
-                comm.sendMsg("0", CommMgr.INSTRUCTION);
+                comm.sendMsg("0;"+getMachineX() + "," + getMachineY() + "," + FACING.print(getMachineFacing()), CommMgr.INSTRUCTION);
             } else if (count < 10) {
-                comm.sendMsg(Integer.toString(count), CommMgr.INSTRUCTION);
-                comm.sendMsg(Integer.toString(count), CommMgr.AINSTRUCTION);
-                
+                comm.sendMsg(Integer.toString(count)+";"+getMachineX() + "," + getMachineY() + "," + FACING.print(getMachineFacing()), CommMgr.INSTRUCTION);
             }
-
             switch (currentF) {
                 case NORTH:
                     currentX += count;
@@ -211,8 +198,6 @@ public class Machine {
                     currentY += count;
                     break;
             }
-
-            comm.sendMsg(getMachineX() + "," + getMachineY() + "," + FACING.print(getMachineFacing()), CommMgr.MACHINE_POS);
         }
     }
 
@@ -297,14 +282,13 @@ public class Machine {
             String[] msgArr = msg.split(",");
 
             if (msgArr[0].equals(CommMgr.SENSOR_DATA)) {
-                result[0] = (int) Math.abs((Math.floor(Double.parseDouble(msgArr[1])))+5f)/10;
-                System.out.println(result[0]);
-                result[1] = (int) Math.abs((Math.floor(Double.parseDouble(msgArr[2])))+5f)/10;
-                result[2] = (int) Math.abs((Math.floor(Double.parseDouble(msgArr[3])))+5f)/10;
-                result[3] = (int) Math.abs((Math.floor(Double.parseDouble(msgArr[4])))+5f)/10;
-                result[4] = (int) Math.abs((Math.floor(Double.parseDouble(msgArr[5])))+5f)/10;
-                System.out.println(result[4]);
-                result[5] = (int) Math.abs((Math.floor(Double.parseDouble(msgArr[6])))+5f)/10;
+                result[0] = Integer.parseInt(msgArr[1].toString());
+                result[1] = Integer.parseInt(msgArr[2].toString());
+                result[2] = Integer.parseInt(msgArr[3].toString());
+                result[3] = Integer.parseInt(msgArr[4].toString());
+                result[4] = Integer.parseInt(msgArr[5].toString());
+                result[5] = Integer.parseInt(msgArr[6].toString()) + 2;
+
             }
 
             sensorRF.realDetect(exploredArena, result[0]);

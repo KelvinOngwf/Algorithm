@@ -6,18 +6,19 @@
 package machine;
 
 /**
-*
-* @author Kelvin
-* @author Chris
-*/
+ *
+ * @author Kelvin
+ * @author Chris
+ */
 public class MachineConfig {
-    
-    public static int sensorShortRangeUpperRange = 3;
+
+    public static int sensorShortRangeUpperRange = 2;
     public static int sensorShortRangeLowerRange = 1;
-    public static int sensorLongRangeUpperRange = 6;
+    public static int sensorLongRangeUpperRange = 5;
     public static int sensorLongRangeLowerRange = 3;
-    
-    public static int speed = 250;
+
+    public static int speed = 100;
+
     public enum FACING {
         NORTH, EAST, SOUTH, WEST;
 
@@ -44,6 +45,7 @@ public class MachineConfig {
             }
         }
     }
+
     public enum MOVEMENT {
         FORWARD, RIGHT, LEFT, CALIBRATE, ERROR;
 

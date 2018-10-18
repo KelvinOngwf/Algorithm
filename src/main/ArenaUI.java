@@ -47,6 +47,7 @@ public class ArenaUI {
     private static JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     private static JPanel container = new JPanel(new BorderLayout());
     private static final CommMgr comm = CommMgr.getCommMgr();
+    private static JButton _appExplorationBtn = null;
 
     public static void main(String[] args) {
         if (!simulationRun) {
@@ -55,26 +56,28 @@ public class ArenaUI {
         _arena = new Arena(_machine);
         exploredMap = new Arena(_machine);
         realMap = new Arena(_machine);
-        _machine = new Machine(_arena.getStartX(), _arena.getStartY(), FACING.NORTH, simulationRun);
+        _machine = new Machine(_arena.getStartX(), _arena.getStartY(), FACING.EAST, simulationRun);
         if (!simulationRun) {
             String[] tempStr = comm.recvMsg().split(",");
-            if(tempStr[0].equalsIgnoreCase("waypoint")){
-            int wayPointX = Integer.parseInt(tempStr[1]);
-            int wayPointY = Integer.parseInt(tempStr[2]);
-            exploredMap.getCell(wayPointX, wayPointY).setWayPoint(true);
-            System.out.println(exploredMap.getCell(wayPointX, wayPointY).getWayPoint());
+            if (tempStr[0].equalsIgnoreCase("waypoint")) {
+                int wayPointX = Integer.parseInt(tempStr[1]);
+                int wayPointY = Integer.parseInt(tempStr[2]);
+                exploredMap.getCell(wayPointX, wayPointY).setWayPoint(true);
+                System.out.println(exploredMap.getCell(wayPointX, wayPointY).getWayPoint());
             }
         }
 
         populateArena();
         setPaintBtn();
         paintMachine();
+        
 
         addInputComponentToPane(inputPanel);
         addButtonsComponentToPane(buttonsPanel);
 
         appFrame.setVisible(true);
         appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
     }
 
     public static void populateArena() {
@@ -211,9 +214,16 @@ public class ArenaUI {
                 }
                 FastestPathAlgorithm fastestPath;
                 fastestPath = new FastestPathAlgorithm(exploredMap, _machine);
-
-                fastestPath.runFastestPath(_arena.goalX, _arena.goalY);
-
+                for(int i=exploredMap.arenaX-1;i>=0;i--){
+                    for(int j=0;j<exploredMap.arenaY;j++){
+                        if(exploredMap.getCell(i, j).getWayPoint())
+                            fastestPath.runFastestPath(i, j);
+                        break;
+                    }
+                }
+                fastestPath = new FastestPathAlgorithm(exploredMap, _machine);
+                fastestPath.runFastestPath(exploredMap.goalX, exploredMap.goalY);
+                
                 return 222;
             }
         }
@@ -295,16 +305,16 @@ public class ArenaUI {
         });
         buttonsPanel.add(_appBtn);
 
-        _appBtn = new JButton("Exploration");
-        _appBtn.setName("explorationBtn");
-        _appBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
-        _appBtn.addMouseListener(new MouseAdapter() {
+        _appExplorationBtn = new JButton("Exploration");
+        _appExplorationBtn.setName("explorationBtn");
+        _appExplorationBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
+        _appExplorationBtn.addMouseListener(new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
                 new Exploration().execute();
 
             }
         });
-        buttonsPanel.add(_appBtn);
+        buttonsPanel.add(_appExplorationBtn);
 
         _appBtn = new JButton("Fastest Path");
         _appBtn.setName("FastestPathBtn");
@@ -318,6 +328,7 @@ public class ArenaUI {
 
         appFrame.setVisible(true);
         appFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        _appExplorationBtn.doClick();
     }
 
     public static void repaintBtn() {
@@ -329,7 +340,9 @@ public class ArenaUI {
                 exploredMap.defineVirtualWall();
 
                 JButton temp = (JButton) c;
-                if (exploredMap.startArea(cellX, cellY)) {
+                if (exploredMap.getCell(cellX, cellY).getWayPoint()) {
+                    temp.setBackground(ArenaUIConfig.wayPointColor);
+                } else if (exploredMap.startArea(cellX, cellY)) {
                     temp.setBackground(ArenaUIConfig.startColor);
                 } else if (exploredMap.goalArea(cellX, cellY)) {
                     temp.setBackground(ArenaUIConfig.goalColor);

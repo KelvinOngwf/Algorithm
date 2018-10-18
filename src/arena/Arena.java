@@ -66,6 +66,11 @@ public class Arena{
                 else
                     c[i][j].setVisited(false);                
     }
+    public void setAllExplored(){
+        for(int i=0; i<arenaX;i++)
+            for(int j=0;j<arenaY;j++)
+                    c[i][j].setVisited(true);
+    }
     public boolean goalArea(int x,int y){
             return x >= 17 && x<= 19 && y>= 12 && y <=14;
     }

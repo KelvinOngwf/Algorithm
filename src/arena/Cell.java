@@ -6,55 +6,66 @@
 package arena;
 
 /**
-*
-* @author Kelvin
-* @author Chris
-*/
+ *
+ * @author Kelvin
+ * @author Chris
+ */
 public class Cell {
+
     private int row;
     private int col;
     private boolean isVirtualWall;
     private boolean isObstacle;
     private boolean isVisited;
     private boolean isWayPoint;
-    
-    public Cell(int x, int y){
+
+    public Cell(int x, int y) {
         row = x;
         col = y;
-        isVirtualWall=false;
-        isObstacle =false;
-        isVisited=false;
-        isWayPoint=false;
+        isVirtualWall = false;
+        isObstacle = false;
+        isVisited = false;
+        isWayPoint = false;
     }
-    public int getRow(){
+
+    public int getRow() {
         return row;
     }
-    public int getCol(){
+
+    public int getCol() {
         return col;
     }
-    public void setWayPoint(boolean wayPoint){
+
+    public void setWayPoint(boolean wayPoint) {
         isWayPoint = wayPoint;
     }
-    public boolean getWayPoint(){
+
+    public boolean getWayPoint() {
         return isWayPoint;
     }
-    public void setObstacle(boolean setObstacle){
-        isObstacle=setObstacle;
+
+    public void setObstacle(boolean setObstacle) {
+        isObstacle = setObstacle;
     }
-    public boolean getIsObstacle(){
+
+    public boolean getIsObstacle() {
         return isObstacle;
     }
-    public void setVirtualWall(boolean setVirtualWall ){
-        isVirtualWall=setVirtualWall;
+
+    public void setVirtualWall(boolean setVirtualWall) {
+        isVirtualWall = setVirtualWall;
     }
-    public boolean getVirtualWall(){
+
+    public boolean getVirtualWall() {
         return isVirtualWall;
     }
-    public void setVisited(boolean setVisited){
+
+    public void setVisited(boolean setVisited) {
         isVisited = setVisited;
     }
-    public boolean getIsVisited(){
+
+    public boolean getIsVisited() {
         return isVisited;
     }
-    
+
 }

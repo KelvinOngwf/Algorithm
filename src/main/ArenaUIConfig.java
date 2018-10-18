@@ -22,4 +22,5 @@ public class ArenaUIConfig {
     public static Color machineColor = Color.RED;
     public static Color virtualWallColor = Color.PINK;
     public static Color machineFacingColor = Color.GREEN;
+    public static Color wayPointColor = Color.CYAN;
 }

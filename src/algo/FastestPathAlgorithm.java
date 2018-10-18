@@ -3,20 +3,20 @@ package algo;
 import arena.*;
 import machine.Machine;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 import machine.MachineConfig.*;
 import main.ArenaUI;
+import main.CommMgr;
 
 /**
-*
-* @author Kelvin
-* @author Chris
-*/
-
+ *
+ * @author Kelvin
+ * @author Chris
+ */
 public class FastestPathAlgorithm {
+
     private ArrayList<Cell> toVisit;        // array of Cells to be visited
     private ArrayList<Cell> visited;        // array of visited Cells
     private HashMap<Cell, Cell> parents;    // HashMap of Child --> Parent
@@ -80,7 +80,7 @@ public class FastestPathAlgorithm {
      * Returns true if the cell can be visited.
      */
     private boolean canBeVisited(Cell c) {
-        return c.getIsVisited()&& !c.getIsObstacle() && !c.getVirtualWall();
+        return c.getIsVisited() && !c.getIsObstacle() && !c.getVirtualWall();
     }
 
     /**
@@ -104,13 +104,16 @@ public class FastestPathAlgorithm {
     }
 
     /**
-     * Returns the heuristic cost i.e. h(n) from a given Cell to a given [goalRow, goalCol] in the maze.
+     * Returns the heuristic cost i.e. h(n) from a given Cell to a given
+     * [goalRow, goalCol] in the maze.
      */
     private double costH(Cell b, int goalRow, int goalCol) {
         // Heuristic: The no. of moves will be equal to the difference in the row and column values.
         double movementCost = (Math.abs(goalCol - b.getCol()) + Math.abs(goalRow - b.getRow())) * MOVE_COST;
 
-        if (movementCost == 0) return 0;
+        if (movementCost == 0) {
+            return 0;
+        }
 
         // Heuristic: If b is not in the same row or column, one turn will be needed.
         double turnCost = 0;
@@ -152,7 +155,8 @@ public class FastestPathAlgorithm {
     }
 
     /**
-     * Calculate the actual cost of moving from Cell a to Cell b (assuming both are neighbors).
+     * Calculate the actual cost of moving from Cell a to Cell b (assuming both
+     * are neighbors).
      */
     private double costG(Cell a, Cell b, FACING aDir) {
         double moveCost = MOVE_COST; // one movement to neighbor
@@ -165,7 +169,8 @@ public class FastestPathAlgorithm {
     }
 
     /**
-     * Find the fastest path from the robot's current position to [goalRow, goalCol].
+     * Find the fastest path from the robot's current position to [goalRow,
+     * goalCol].
      */
     public String runFastestPath(int goalRow, int goalCol) {
         System.out.println("Calculating fastest path from (" + current.getRow() + ", " + current.getCol() + ") to goal (" + goalRow + ", " + goalCol + ")...");
@@ -264,7 +269,8 @@ public class FastestPathAlgorithm {
     }
 
     /**
-     * Executes the fastest path and returns a StringBuilder object with the path steps.
+     * Executes the fastest path and returns a StringBuilder object with the
+     * path steps.
      */
     private String executePath(Stack<Cell> path, int goalRow, int goalCol) {
         StringBuilder outputString = new StringBuilder();
@@ -274,33 +280,31 @@ public class FastestPathAlgorithm {
 
         ArrayList<MOVEMENT> movements = new ArrayList<>();
 
-        Machine tempBot = new Machine(_machine.getMachineX(),_machine.getMachineY() ,_machine.getMachineFacing(), true);
-        
-        
-        tempBot.setSpeed(0);
-        while ((tempBot.getMachineX()!= goalRow) || (tempBot.getMachineY() != goalCol)) {
+        Machine tempBot = new Machine(_machine.getMachineX(), _machine.getMachineY(), _machine.getMachineFacing(), false);
+
+        while ((tempBot.getMachineX() != goalRow) || (tempBot.getMachineY() != goalCol)) {
             if (tempBot.getMachineX() == temp.getRow() && tempBot.getMachineY() == temp.getCol()) {
                 temp = path.pop();
             }
-            
 
             targetDir = getTargetDir(tempBot.getMachineX(), tempBot.getMachineY(), tempBot.getMachineFacing(), temp);
 
             MOVEMENT m;
-            if (tempBot.getMachineFacing()!= targetDir) {
+            if (tempBot.getMachineFacing() != targetDir) {
                 m = getTargetMove(tempBot.getMachineFacing(), targetDir);
             } else {
                 m = MOVEMENT.FORWARD;
             }
 
-            System.out.println("Movement " + MOVEMENT.print(m) + " from (" + tempBot.getMachineX()+ ", " + tempBot.getMachineY() + ") to (" + temp.getRow() + ", " + temp.getCol() + ")");
+            System.out.println("Movement " + MOVEMENT.print(m) + " from (" + tempBot.getMachineX() + ", " + tempBot.getMachineY() + ") to (" + temp.getRow() + ", " + temp.getCol() + ")");
 
-            tempBot.move(m);
+            tempBot.move(m,false);
+
             movements.add(m);
             outputString.append(MOVEMENT.print(m));
         }
 
-        if (_machine.getSimulationMachine()|| explorationMode) {
+        if (_machine.getSimulationMachine() || explorationMode) {
             for (MOVEMENT x : movements) {
                 if (x == MOVEMENT.FORWARD) {
                     if (!canMoveForward()) {
@@ -311,14 +315,14 @@ public class FastestPathAlgorithm {
 
                 _machine.move(x);
                 ArenaUI.repaintBtn();
-        ArenaUI.paintMachine();
+                ArenaUI.paintMachine();
 
                 // During exploration, use sensor data to update exploredMap.
                 if (explorationMode) {
                     _machine.setSensors();
                     _machine.detect(this.exploredMap, this.realMap);
                     ArenaUI.repaintBtn();
-        ArenaUI.paintMachine();
+                    ArenaUI.paintMachine();
                 }
             }
         } else {
@@ -327,29 +331,41 @@ public class FastestPathAlgorithm {
                 if (x == MOVEMENT.FORWARD) {
                     fCount++;
                     if (fCount == 10) {
+
                         _machine.moveForwardMultiple(fCount);
+                        
+                        CommMgr.getCommMgr().recvMsg();
+
                         fCount = 0;
                         ArenaUI.repaintBtn();
                         ArenaUI.paintMachine();
                     }
                 } else if (x == MOVEMENT.RIGHT || x == MOVEMENT.LEFT) {
+                    //if (fCount > 0) {
                     if (fCount > 0) {
+
                         _machine.moveForwardMultiple(fCount);
+                        CommMgr.getCommMgr().recvMsg();
                         fCount = 0;
                         ArenaUI.repaintBtn();
                         ArenaUI.paintMachine();
                     }
 
                     _machine.move(x);
+                    CommMgr.getCommMgr().recvMsg();
                     ArenaUI.repaintBtn();
                     ArenaUI.paintMachine();
                 }
             }
 
             if (fCount > 0) {
+                //String tempBuffer = CommMgr.getCommMgr().recvMsg();
+
                 _machine.moveForwardMultiple(fCount);
+
                 ArenaUI.repaintBtn();
                 ArenaUI.paintMachine();
+
             }
         }
 
@@ -358,7 +374,8 @@ public class FastestPathAlgorithm {
     }
 
     /**
-     * Returns true if the robot can move forward one cell with the current heading.
+     * Returns true if the robot can move forward one cell with the current
+     * heading.
      */
     private boolean canMoveForward() {
         int x = _machine.getMachineX();
@@ -458,8 +475,11 @@ public class FastestPathAlgorithm {
         System.out.println("Path:");
         while (!pathForPrint.isEmpty()) {
             temp = pathForPrint.pop();
-            if (!pathForPrint.isEmpty()) System.out.print("(" + temp.getRow() + ", " + temp.getCol() + ") --> ");
-            else System.out.print("(" + temp.getRow() + ", " + temp.getCol() + ")");
+            if (!pathForPrint.isEmpty()) {
+                System.out.print("(" + temp.getRow() + ", " + temp.getCol() + ") --> ");
+            } else {
+                System.out.print("(" + temp.getRow() + ", " + temp.getCol() + ")");
+            }
         }
 
         System.out.println("\n");

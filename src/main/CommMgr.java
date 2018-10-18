@@ -5,23 +5,21 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 /**
- * Communication manager to communicate with the different parts of the system via the RasPi.
+ * Communication manager to communicate with the different parts of the system
+ * via the RasPi.
  *
  * @author Kelvin
  * @author Chris
  */
-
 public class CommMgr {
 
-    public static final String EX_START = "EX_START";       // Android --> PC
-    public static final String EX_FINISH= "bEX_FINISH";
-    public static final String FP_START = "FP_START";       // Android --> PC
-    public static final String MAP_STRINGS = "bMAP";         // PC --> Android
-    public static final String MACHINE_POS = "bMACHINE_POS";         // PC --> Android
-    public static final String MACHINE_START = "aZ";     // PC --> Arduino
-    public static final String INSTRUCTION = "aINSTRUCTION";      // PC --> Arduino
-    public static final String AINSTRUCTION = "bINSTRUCTION";       //pc --> Android
-    public static final String SENSOR_DATA = "SDATA";       // Arduino --> PC
+    public static final String EX_START = "EX_START";               // Android --> PC
+    public static final String FP_START = "FP_START";               // Android --> PC
+    public static final String MAP_STRINGS = "bMAP";                // PC --> Android
+    public static final String MACHINE_POS = "bMACHINE_POS";        // PC --> Android
+    public static final String MACHINE_START = "aZ";                // PC --> Arduino
+    public static final String INSTRUCTION = "xINSTRUCTION";        // PC --> Arduino
+    public static final String SENSOR_DATA = "SDATA";               // Arduino --> PC
 
     private static CommMgr commMgr = null;
     private static Socket conn = null;
@@ -87,14 +85,11 @@ public class CommMgr {
     }
 
     public void sendMsg(String msg, String msgType) {
-        System.out.println("Sending a message...");
 
         try {
             String outputMsg;
             if (msg == null) {
                 outputMsg = msgType + "\n\n";
-            } else if (msgType.equals(MAP_STRINGS) || msgType.equals(MACHINE_POS)) {
-                outputMsg = msgType + "," + msg + "\n\n";
             } else {
                 outputMsg = msgType + "," + msg + "\n\n";
             }
@@ -113,14 +108,11 @@ public class CommMgr {
     public String recvMsg() {
         System.out.println("Receiving a message...");
         try {
-            while(true)
-            {
                 String input = reader.readLine();
-                if(!input.isEmpty()){
+                if (!input.isEmpty()) {
                     System.out.println(input);
                     return input;
                 }
-            }
         } catch (IOException e) {
             System.out.println("recvMsg() --> IOException");
         } catch (Exception e) {
