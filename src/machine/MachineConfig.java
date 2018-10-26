@@ -14,7 +14,7 @@ public class MachineConfig {
 
     public static int sensorShortRangeUpperRange = 2;
     public static int sensorShortRangeLowerRange = 1;
-    public static int sensorLongRangeUpperRange = 5;
+    public static int sensorLongRangeUpperRange = 6;
     public static int sensorLongRangeLowerRange = 3;
 
     public static int speed = 100;

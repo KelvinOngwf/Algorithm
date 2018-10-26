@@ -331,10 +331,11 @@ public class FastestPathAlgorithm {
                 if (x == MOVEMENT.FORWARD) {
                     fCount++;
                     if (fCount == 10) {
-
+ 
                         _machine.moveForwardMultiple(fCount);
-                        
+                        if (!_machine.getSimulationMachine()) {
                         CommMgr.getCommMgr().recvMsg();
+                        }
 
                         fCount = 0;
                         ArenaUI.repaintBtn();
@@ -345,14 +346,18 @@ public class FastestPathAlgorithm {
                     if (fCount > 0) {
 
                         _machine.moveForwardMultiple(fCount);
+                        if (!_machine.getSimulationMachine()) {
                         CommMgr.getCommMgr().recvMsg();
+                        }
                         fCount = 0;
                         ArenaUI.repaintBtn();
                         ArenaUI.paintMachine();
                     }
 
                     _machine.move(x);
+                    if (!_machine.getSimulationMachine()) {
                     CommMgr.getCommMgr().recvMsg();
+                    }
                     ArenaUI.repaintBtn();
                     ArenaUI.paintMachine();
                 }

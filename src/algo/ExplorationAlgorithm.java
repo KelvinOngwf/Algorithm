@@ -83,6 +83,7 @@ public class ExplorationAlgorithm {
         } while (areaVisited <= exploreLimit && System.currentTimeMillis() <= endTime);
         checkUnexploredCell();
         backToStart();
+        moveMachine(MOVEMENT.CALIBRATE);
 
     }
 
@@ -107,7 +108,7 @@ public class ExplorationAlgorithm {
             }
         }
     }
-
+        
     private void moveAlgo() {
 
         if (counter < 5) {
@@ -125,48 +126,95 @@ public class ExplorationAlgorithm {
                 if (checkForward()) {
                     moveMachine(MOVEMENT.FORWARD);
                 }
+                counter = 0;
             } else {
                 moveMachine(MOVEMENT.RIGHT);
                 moveMachine(MOVEMENT.RIGHT);
             }
         } else {
             FACING curr = machine.getMachineFacing();
-            switch(curr){
+            switch (curr) {
                 case NORTH:
-                    while(!exploredArena.getIsObstacleOrWall(machine.getMachineX()+2, machine.getMachineY()-1)&&!exploredArena.getIsObstacleOrWall(machine.getMachineX()+2, machine.getMachineY())&&!exploredArena.getIsObstacleOrWall(machine.getMachineX()+2, machine.getMachineY()+1))
-                    {
-                        moveMachine(MOVEMENT.FORWARD);
+                    while (!exploredArena.getIsObstacleOrWall(machine.getMachineX() + 2, machine.getMachineY() - 1) && !exploredArena.getIsObstacleOrWall(machine.getMachineX() + 2, machine.getMachineY()) && !exploredArena.getIsObstacleOrWall(machine.getMachineX() + 2, machine.getMachineY() + 1)) {
+                        if (checkForward()) {
+                            moveMachine(MOVEMENT.FORWARD);
+                        } else {
+                            moveMachine(MOVEMENT.LEFT);
+                        }
                     }
                     moveMachine(MOVEMENT.LEFT);
-                    counter=0;
+                    counter = 0;
                     break;
                 case SOUTH:
-                    while(!exploredArena.getIsObstacleOrWall(machine.getMachineX()-2, machine.getMachineY()-1)&&!exploredArena.getIsObstacleOrWall(machine.getMachineX()-2, machine.getMachineY())&&!exploredArena.getIsObstacleOrWall(machine.getMachineX()-2, machine.getMachineY()+1))
-                    {
-                        moveMachine(MOVEMENT.FORWARD);
+                    while (!exploredArena.getIsObstacleOrWall(machine.getMachineX() - 2, machine.getMachineY() - 1) && !exploredArena.getIsObstacleOrWall(machine.getMachineX() - 2, machine.getMachineY()) && !exploredArena.getIsObstacleOrWall(machine.getMachineX() - 2, machine.getMachineY() + 1)) {
+                        if (checkForward()) {
+                            moveMachine(MOVEMENT.FORWARD);
+                        } else {
+                            moveMachine(MOVEMENT.LEFT);
+                        }
                     }
                     moveMachine(MOVEMENT.LEFT);
-                    counter=0;
+                    counter = 0;
                     break;
                 case EAST:
-                    while(!exploredArena.getIsObstacleOrWall(machine.getMachineX()-1, machine.getMachineY()+2)&&!exploredArena.getIsObstacleOrWall(machine.getMachineX(), machine.getMachineY()+2)&&!exploredArena.getIsObstacleOrWall(machine.getMachineX()+1, machine.getMachineY()+2))
-                    {
-                        moveMachine(MOVEMENT.FORWARD);
+                    while (!exploredArena.getIsObstacleOrWall(machine.getMachineX() - 1, machine.getMachineY() + 2) && !exploredArena.getIsObstacleOrWall(machine.getMachineX(), machine.getMachineY() + 2) && !exploredArena.getIsObstacleOrWall(machine.getMachineX() + 1, machine.getMachineY() + 2)) {
+                        if (checkForward()) {
+                            moveMachine(MOVEMENT.FORWARD);
+                        } else {
+                            moveMachine(MOVEMENT.LEFT);
+                        }
                     }
                     moveMachine(MOVEMENT.LEFT);
-                    counter=0;
+                    counter = 0;
                     break;
                 case WEST:
-                    while(!exploredArena.getIsObstacleOrWall(machine.getMachineX()-1, machine.getMachineY()-2)&&!exploredArena.getIsObstacleOrWall(machine.getMachineX(), machine.getMachineY()+2)&&!exploredArena.getIsObstacleOrWall(machine.getMachineX()+1, machine.getMachineY()+2))
-                    {
-                        moveMachine(MOVEMENT.FORWARD);
+                    while (!exploredArena.getIsObstacleOrWall(machine.getMachineX() - 1, machine.getMachineY() - 2) && !exploredArena.getIsObstacleOrWall(machine.getMachineX(), machine.getMachineY() + 2) && !exploredArena.getIsObstacleOrWall(machine.getMachineX() + 1, machine.getMachineY() + 2)) {
+                        if (checkForward()) {
+                            moveMachine(MOVEMENT.FORWARD);
+                        } else {
+                            moveMachine(MOVEMENT.LEFT);
+                        }
                     }
                     moveMachine(MOVEMENT.LEFT);
-                    counter=0;
+                    counter = 0;
                     break;
             }
         }
-        if (lastCalibrate % 4 == 0) {
+        switch(machine.getMachineFacing()){
+                case NORTH:
+                    if(exploredArena.getIsObstacleOrWall(machine.getMachineX()+2, machine.getMachineY()-1)&&exploredArena.getIsObstacleOrWall(machine.getMachineX()+2, machine.getMachineY())&&exploredArena.getIsObstacleOrWall(machine.getMachineX()+2, machine.getMachineY()+1)
+                            &&exploredArena.getIsObstacleOrWall(machine.getMachineX()+1, machine.getMachineY()+2)&&exploredArena.getIsObstacleOrWall(machine.getMachineX(), machine.getMachineY()+2)&&exploredArena.getIsObstacleOrWall(machine.getMachineX()-1, machine.getMachineY()+2))
+                    {
+                        moveMachine(MOVEMENT.CALIBRATE);
+                        lastCalibrate=1;
+                    }
+                    break;
+                case SOUTH:
+                    if(exploredArena.getIsObstacleOrWall(machine.getMachineX()-2, machine.getMachineY()-1)&&exploredArena.getIsObstacleOrWall(machine.getMachineX()-2, machine.getMachineY())&&exploredArena.getIsObstacleOrWall(machine.getMachineX()-2, machine.getMachineY()+1)
+                            &&exploredArena.getIsObstacleOrWall(machine.getMachineX()-1, machine.getMachineY()-2)&&exploredArena.getIsObstacleOrWall(machine.getMachineX(), machine.getMachineY()-2)&&exploredArena.getIsObstacleOrWall(machine.getMachineX()+1, machine.getMachineY()-2))
+                    {
+                        moveMachine(MOVEMENT.CALIBRATE);
+                        lastCalibrate = 1;
+                    }
+                    break;
+                case EAST:
+                    if(exploredArena.getIsObstacleOrWall(machine.getMachineX()-1, machine.getMachineY()+2)&&exploredArena.getIsObstacleOrWall(machine.getMachineX(), machine.getMachineY()+2)&&exploredArena.getIsObstacleOrWall(machine.getMachineX()+1, machine.getMachineY()+2)
+                            &&exploredArena.getIsObstacleOrWall(machine.getMachineX()-2, machine.getMachineY()-1)&&exploredArena.getIsObstacleOrWall(machine.getMachineX()-2, machine.getMachineY())&&exploredArena.getIsObstacleOrWall(machine.getMachineX()-2, machine.getMachineY()+1))
+                    {
+                        moveMachine(MOVEMENT.CALIBRATE);
+                        lastCalibrate = 1;
+                    }
+                    break;
+                case WEST:
+                    if(exploredArena.getIsObstacleOrWall(machine.getMachineX()-1, machine.getMachineY()-2)&&exploredArena.getIsObstacleOrWall(machine.getMachineX(), machine.getMachineY()-2)&&exploredArena.getIsObstacleOrWall(machine.getMachineX()+1, machine.getMachineY()-2)
+                            &&exploredArena.getIsObstacleOrWall(machine.getMachineX()+2, machine.getMachineY()-1)&&exploredArena.getIsObstacleOrWall(machine.getMachineX()+2, machine.getMachineY())&&exploredArena.getIsObstacleOrWall(machine.getMachineX()+2, machine.getMachineY()+1))
+                    {
+                        moveMachine(MOVEMENT.CALIBRATE);
+                        lastCalibrate = 1;
+                    }
+                    break;
+            }
+        if (lastCalibrate % 3 == 0) {
                 if (canCalibrate()) {
                     lastCalibrate = 1;
                     moveMachine(MOVEMENT.CALIBRATE);
@@ -308,7 +356,6 @@ public class ExplorationAlgorithm {
 
     private void detectRepaint() {
         machine.setSensors();
-        System.out.println("hi");
         machine.detect(exploredArena, realArena);
         ArenaUI.repaintBtn();
         ArenaUI.paintMachine();

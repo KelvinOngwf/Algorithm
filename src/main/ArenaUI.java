@@ -346,7 +346,9 @@ public class ArenaUI {
                     temp.setBackground(ArenaUIConfig.startColor);
                 } else if (exploredMap.goalArea(cellX, cellY)) {
                     temp.setBackground(ArenaUIConfig.goalColor);
-                } else if (!exploredMap.getCell(cellX, cellY).getIsVisited()) {
+                } else if(exploredMap.getCell(cellX, cellY).getMachineVisited()){
+                    temp.setBackground(ArenaUIConfig.machineVisitedPath);
+                }else if (!exploredMap.getCell(cellX, cellY).getIsVisited()) {
                     temp.setBackground(ArenaUIConfig.unexploredColor);
                 } else if (exploredMap.isObstacle(cellX, cellY)) {
                     temp.setBackground(ArenaUIConfig.obstacleColor);
@@ -439,6 +441,7 @@ public class ArenaUI {
                 if (_machine.machineSize(machineX, machineY)) {
                     temp.setBackground(ArenaUIConfig.machineColor);
                     exploredMap.getCell(machineX, machineY).setVisited(true);
+                    exploredMap.getCell(machineX,machineY).setMachineVisited(true);
                 }
                 if (_machine.machineFacingCell(machineX, machineY)) {
                     temp.setBackground(ArenaUIConfig.machineFacingColor);
@@ -447,5 +450,4 @@ public class ArenaUI {
             }
         }
     }
-
 }

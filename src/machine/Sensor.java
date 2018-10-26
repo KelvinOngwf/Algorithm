@@ -138,13 +138,15 @@ public class Sensor {
             exploredArena.getCell(row, col).setVisited(true);
 
             if (sensorVal + 1 == i) {
-                exploredArena.placeObstacle(row, col, true);
-                break;
+                if (!exploredArena.getCell(row, col).getMachineVisited()) {
+                    exploredArena.placeObstacle(row, col, true);
+                    break;
+                }
             }
 
             // Override previous obstacle value if front sensors detect no obstacle.
             if (exploredArena.getCell(row, col).getIsObstacle()) {
-                if (sensorID.equals("SFL") || sensorID.equals("SFC") || sensorID.equals("SFR")|| sensorID.equals("SRF")|| sensorID.equals("SRB") || sensorID.equals("SLL")) {
+                if (sensorID.equals("SFL") || sensorID.equals("SFC") || sensorID.equals("SFR")|| sensorID.equals("SRF")|| sensorID.equals("SRB")|| sensorID.equals("SLL")) {
                     exploredArena.placeObstacle(row, col, false);
                 } else {
                     break;

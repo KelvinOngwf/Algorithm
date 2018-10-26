@@ -18,6 +18,7 @@ public class Cell {
     private boolean isObstacle;
     private boolean isVisited;
     private boolean isWayPoint;
+    private boolean machineVisited;
 
     public Cell(int x, int y) {
         row = x;
@@ -26,6 +27,7 @@ public class Cell {
         isObstacle = false;
         isVisited = false;
         isWayPoint = false;
+        machineVisited=false;
     }
 
     public int getRow() {
@@ -34,6 +36,12 @@ public class Cell {
 
     public int getCol() {
         return col;
+    }
+    public void setMachineVisited(boolean machineVisited){
+        this.machineVisited=machineVisited;
+    }
+    public boolean getMachineVisited(){
+        return machineVisited;
     }
 
     public void setWayPoint(boolean wayPoint) {
