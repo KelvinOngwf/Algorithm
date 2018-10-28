@@ -21,6 +21,7 @@ public class FastestPathAlgorithm {
     private ArrayList<Cell> visited;        // array of visited Cells
     private HashMap<Cell, Cell> parents;    // HashMap of Child --> Parent
     private Cell current;                   // current Cell
+    private Cell currentL;
     private Cell[] neighbors;               // array of neighbors of current Cell
     private FACING curFacing;               // current direction of robot
     private double[][] gCosts;              // array of real cost from START to [row][col] i.e. g(n)
@@ -181,6 +182,84 @@ public class FastestPathAlgorithm {
 
             // Get cell with minimum cost from toVisit and assign it to current.
             current = minimumCostCell(goalRow, goalCol);
+
+            // Point the robot in the direction of current from the previous cell.
+            if (parents.containsKey(current)) {
+                curFacing = getTargetDir(parents.get(current).getRow(), parents.get(current).getCol(), curFacing, current);
+            }
+
+            visited.add(current);       // add current to visited
+            toVisit.remove(current);    // remove current from toVisit
+
+            if (visited.contains(exploredMap.getCell(goalRow, goalCol))) {
+                System.out.println("Goal visited. Path found!");
+                path = getPath(goalRow, goalCol);
+                printFastestPath(path);
+                return executePath(path, goalRow, goalCol);
+            }
+
+            // Setup neighbors of current cell. [Top, Bottom, Left, Right].
+            if (exploredMap.checkValidCell(current.getRow() + 1, current.getCol())) {
+                neighbors[0] = exploredMap.getCell(current.getRow() + 1, current.getCol());
+                if (!canBeVisited(neighbors[0])) {
+                    neighbors[0] = null;
+                }
+            }
+            if (exploredMap.checkValidCell(current.getRow() - 1, current.getCol())) {
+                neighbors[1] = exploredMap.getCell(current.getRow() - 1, current.getCol());
+                if (!canBeVisited(neighbors[1])) {
+                    neighbors[1] = null;
+                }
+            }
+            if (exploredMap.checkValidCell(current.getRow(), current.getCol() - 1)) {
+                neighbors[2] = exploredMap.getCell(current.getRow(), current.getCol() - 1);
+                if (!canBeVisited(neighbors[2])) {
+                    neighbors[2] = null;
+                }
+            }
+            if (exploredMap.checkValidCell(current.getRow(), current.getCol() + 1)) {
+                neighbors[3] = exploredMap.getCell(current.getRow(), current.getCol() + 1);
+                if (!canBeVisited(neighbors[3])) {
+                    neighbors[3] = null;
+                }
+            }
+
+            // Iterate through neighbors and update the g(n) values of each.
+            for (int i = 0; i < 4; i++) {
+                if (neighbors[i] != null) {
+                    if (visited.contains(neighbors[i])) {
+                        continue;
+                    }
+
+                    if (!(toVisit.contains(neighbors[i]))) {
+                        parents.put(neighbors[i], current);
+                        gCosts[neighbors[i].getRow()][neighbors[i].getCol()] = gCosts[current.getRow()][current.getCol()] + costG(current, neighbors[i], curFacing);
+                        toVisit.add(neighbors[i]);
+                    } else {
+                        double currentGScore = gCosts[neighbors[i].getRow()][neighbors[i].getCol()];
+                        double newGScore = gCosts[current.getRow()][current.getCol()] + costG(current, neighbors[i], curFacing);
+                        if (newGScore < currentGScore) {
+                            gCosts[neighbors[i].getRow()][neighbors[i].getCol()] = newGScore;
+                            parents.put(neighbors[i], current);
+                        }
+                    }
+                }
+            }
+        } while (!toVisit.isEmpty());
+
+        System.out.println("Path not found!");
+        return null;
+    }
+    public String runFastestPath(int wayPointX, int wayPointY, int goalRow, int goalCol) {
+        System.out.println("Calculating fastest path from (" + current.getRow() + ", " + current.getCol() + ") to goal (" + goalRow + ", " + goalCol + ")...");
+
+        Stack<Cell> path;
+        do {
+            loopCount++;
+
+            // Get cell with minimum cost from toVisit and assign it to current.
+            current = minimumCostCell(wayPointX, wayPointY);
+            currentL = minimumCostCell(goalRow,goalCol);
 
             // Point the robot in the direction of current from the previous cell.
             if (parents.containsKey(current)) {

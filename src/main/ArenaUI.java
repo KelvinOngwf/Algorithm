@@ -42,6 +42,8 @@ public class ArenaUI {
     private static final boolean simulationRun = false;
     private static Arena _arena;
     private static Machine _machine;
+    private static int wayPointX;
+    private static int wayPointY;
     private static JPanel drawingPanel = new JPanel(new GridLayout(21, 15));
     private static JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     private static JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -60,8 +62,8 @@ public class ArenaUI {
         if (!simulationRun) {
             String[] tempStr = comm.recvMsg().split(",");
             if (tempStr[0].equalsIgnoreCase("waypoint")) {
-                int wayPointX = Integer.parseInt(tempStr[1]);
-                int wayPointY = Integer.parseInt(tempStr[2]);
+                wayPointX = Integer.parseInt(tempStr[1]);
+                wayPointY = Integer.parseInt(tempStr[2]);
                 exploredMap.getCell(wayPointX, wayPointY).setWayPoint(true);
                 System.out.println(exploredMap.getCell(wayPointX, wayPointY).getWayPoint());
             }
@@ -213,6 +215,7 @@ public class ArenaUI {
                     }
                 }
                 FastestPathAlgorithm fastestPath;
+                FastestPathAlgorithm fastestPath2;
                 fastestPath = new FastestPathAlgorithm(exploredMap, _machine);
                 for(int i=exploredMap.arenaX-1;i>=0;i--){
                     for(int j=0;j<exploredMap.arenaY;j++){
@@ -222,7 +225,9 @@ public class ArenaUI {
                     }
                 }
                 fastestPath = new FastestPathAlgorithm(exploredMap, _machine);
-                fastestPath.runFastestPath(exploredMap.goalX, exploredMap.goalY);
+                fastestPath.runFastestPath(wayPointX, wayPointY);
+                fastestPath2 = new FastestPathAlgorithm(exploredMap, _machine);
+                fastestPath2.runFastestPath(exploredMap.goalX, exploredMap.goalY);
                 
                 return 222;
             }

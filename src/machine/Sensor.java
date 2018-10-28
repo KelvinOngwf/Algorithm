@@ -146,7 +146,7 @@ public class Sensor {
 
             // Override previous obstacle value if front sensors detect no obstacle.
             if (exploredArena.getCell(row, col).getIsObstacle()) {
-                if (sensorID.equals("SFL") || sensorID.equals("SFC") || sensorID.equals("SFR")|| sensorID.equals("SRF")|| sensorID.equals("SRB")|| sensorID.equals("SLL")) {
+                if ( sensorID.equals("SFC") || sensorID.equals("SFR")|| sensorID.equals("SRF")|| sensorID.equals("SRB")) {
                     exploredArena.placeObstacle(row, col, false);
                 } else {
                     break;
